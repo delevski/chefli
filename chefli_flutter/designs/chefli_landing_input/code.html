@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Chefli - AI Recipe Generator</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f48c25",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#0a0a0a",
+                        "chefli-green": "#2ecc71",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-orange {
+            background: radial-gradient(circle, rgba(244, 140, 37, 0.15) 0%, rgba(244, 140, 37, 0) 70%);
+        }
+        .glow-green {
+            background: radial-gradient(circle, rgba(46, 204, 113, 0.1) 0%, rgba(46, 204, 113, 0) 70%);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-white min-h-screen flex flex-col font-display overflow-hidden relative">
+<!-- Background Decorative Glows -->
+<div class="absolute top-[-10%] right-[-10%] w-[400px] h-[400px] glow-orange pointer-events-none"></div>
+<div class="absolute bottom-[-5%] left-[-10%] w-[500px] h-[500px] glow-green pointer-events-none"></div>
+<!-- Top Status Bar Mockup -->
+<div class="flex justify-between items-center px-8 py-4 w-full z-10">
+<span class="text-sm font-semibold">9:41</span>
+<div class="flex gap-1.5 items-center">
+<span class="material-symbols-outlined text-[18px]">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[18px]">wifi</span>
+<span class="material-symbols-outlined text-[18px]">battery_full</span>
+</div>
+</div>
+<!-- Top App Bar -->
+<header class="flex items-center justify-between px-6 py-4 z-10">
+<div class="flex items-center gap-2">
+<div class="bg-primary rounded-lg p-1.5 flex items-center justify-center">
+<span class="material-symbols-outlined text-background-dark font-bold">restaurant</span>
+</div>
+<span class="text-xl font-bold tracking-tight">Chefli</span>
+</div>
+<button class="w-10 h-10 rounded-full glass-card flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">account_circle</span>
+</button>
+</header>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col justify-center px-6 pb-24 z-10">
+<!-- Hero Section -->
+<div class="mb-10 text-center">
+<h1 class="text-[40px] leading-[1.1] font-extrabold tracking-tight mb-4 text-white">
+                What are we <br/> <span class="text-primary">cooking</span> today?
+            </h1>
+<p class="text-white/50 text-base max-w-[280px] mx-auto leading-relaxed">
+                Describe your ingredients or upload a photo to generate instant recipes.
+            </p>
+</div>
+<!-- Composer Area -->
+<div class="glass-card rounded-2xl p-4 flex flex-col gap-4">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full overflow-hidden shrink-0 border border-white/10 bg-white/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-white/40">smart_toy</span>
+</div>
+<div class="flex-1">
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-white placeholder:text-white/30 text-lg resize-none min-h-[120px] p-0 pt-1" placeholder="I have salmon, asparagus and some lemon. Give me something healthy..."></textarea>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Multimodal Icons -->
+<div class="flex items-center gap-2 py-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-white/70">image</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-white/70">attach_file</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-white/70">mic</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-white/70">play_circle</span>
+</button>
+</div>
+<!-- Cook Button -->
+<button class="w-full bg-primary hover:bg-primary/90 text-background-dark font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined font-bold">bolt</span>
+<span class="text-lg">Cook</span>
+</button>
+</div>
+</div>
+<!-- Suggestion Chips -->
+<div class="mt-8 flex gap-3 overflow-x-auto pb-4 no-scrollbar">
+<button class="whitespace-nowrap px-4 py-2 glass-card rounded-full text-sm text-white/70">🥗 Quick Salad</button>
+<button class="whitespace-nowrap px-4 py-2 glass-card rounded-full text-sm text-white/70">🍝 Pasta Night</button>
+<button class="whitespace-nowrap px-4 py-2 glass-card rounded-full text-sm text-white/70">🥩 High Protein</button>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 right-0 z-20 pb-8 pt-2 glass-card border-t-0 border-white/5 rounded-t-3xl">
+<div class="flex justify-around items-center px-4">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1">house</span>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-white/40" href="#">
+<span class="material-symbols-outlined text-[28px]">restaurant_menu</span>
+<span class="text-[10px] font-medium">Recipes</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-white/40" href="#">
+<span class="material-symbols-outlined text-[28px]">bookmark</span>
+<span class="text-[10px] font-medium">Saved</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-white/40" href="#">
+<span class="material-symbols-outlined text-[28px]">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</div>
+<!-- iOS Home Indicator -->
+<div class="mt-6 flex justify-center">
+<div class="w-32 h-1.5 bg-white/20 rounded-full"></div>
+</div>
+</nav>
+<style>
+        /* Utility to hide scrollbar but allow scrolling */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

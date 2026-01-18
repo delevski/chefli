@@ -1,0 +1,35 @@
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
+# Flutter
+chefli_flutter/.dart_tool/
+chefli_flutter/.flutter-plugins
+chefli_flutter/.flutter-plugins-dependencies
+chefli_flutter/.packages
+chefli_flutter/.pub-cache/
+chefli_flutter/.pub/
+chefli_flutter/build/
+chefli_flutter/.flutter-plugins-dependencies
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

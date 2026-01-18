@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Chefli Home Discovery</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f48c25",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#181411",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass {
+            background: rgba(24, 20, 17, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .recipe-card-gradient {
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 60%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white min-h-screen">
+<!-- Sticky Glassmorphic Header -->
+<header class="sticky top-0 z-50 glass">
+<div class="flex items-center p-4 pb-2 justify-between">
+<div class="flex size-10 shrink-0 items-center justify-center bg-primary rounded-xl">
+<span class="material-symbols-outlined text-white">restaurant</span>
+</div>
+<h2 class="text-white text-xl font-bold leading-tight tracking-tight flex-1 ml-3 italic">Chefli</h2>
+<div class="flex gap-2">
+<button class="flex size-10 items-center justify-center rounded-full bg-white/10 text-white">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex size-10 items-center justify-center rounded-full bg-white/10 text-white">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="px-4 py-3">
+<label class="flex flex-col min-w-40 h-12 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full bg-white/10 border border-white/10 focus-within:border-primary/50 transition-colors">
+<div class="text-white/60 flex items-center justify-center pl-4">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 border-none bg-transparent focus:ring-0 text-white placeholder:text-white/40 px-3 text-base font-normal" placeholder="Describe a dish or paste a URL..."/>
+<div class="flex items-center pr-2">
+<button class="p-2 text-primary">
+<span class="material-symbols-outlined">auto_awesome</span>
+</button>
+</div>
+</div>
+</label>
+</div>
+<!-- Category Chips -->
+<div class="flex gap-3 px-4 pb-4 overflow-x-auto no-scrollbar">
+<div class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary px-5">
+<p class="text-white text-sm font-semibold">All</p>
+</div>
+<div class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white/10 px-5 border border-white/5">
+<p class="text-white/80 text-sm font-medium">Italian</p>
+</div>
+<div class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white/10 px-5 border border-white/5">
+<p class="text-white/80 text-sm font-medium">Asian</p>
+</div>
+<div class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white/10 px-5 border border-white/5">
+<p class="text-white/80 text-sm font-medium">Quick</p>
+</div>
+<div class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white/10 px-5 border border-white/5">
+<p class="text-white/80 text-sm font-medium">Vegan</p>
+</div>
+</div>
+</header>
+<main class="pb-24">
+<!-- Section Header -->
+<div class="flex items-center justify-between px-4 pt-6 pb-2">
+<h2 class="text-white text-xl font-bold tracking-tight">AI Presets for You</h2>
+<button class="text-primary text-sm font-semibold">View all</button>
+</div>
+<!-- Recipe Grid -->
+<div class="grid grid-cols-2 gap-4 p-4">
+<!-- Card 1 -->
+<div class="relative group aspect-[4/5] rounded-xl overflow-hidden bg-zinc-800">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Gourmet creamy spaghetti carbonara with parsley" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuADyZ96WPEmeyXCGQAEEGH1K0IX2yAyaQ0VSeqXahkETcoG6Osm1HatMy6TQ06ndhqi5Vo2MfuApFVYOnJPH0roWlPILsxZzyJ6ifbRw3HgpA-eKDsu117yRXe1mepv8G41DnV-p4Xi9Fn-FHpjQJlEJ5-dYrGk6rHJDc9A__C4qG6RdxFJPPtLZELpk3iOIt9GEWw2rPw8fkj-1jzJknGsuN_JLdLUWAG1ofoYS7qwIU5wUFczlafmbAVLwRMx3K8WcanOdUEwC3ZI");'></div>
+<div class="absolute inset-0 recipe-card-gradient"></div>
+<div class="absolute inset-0 flex flex-col justify-end p-3">
+<p class="text-white text-sm font-bold leading-tight mb-2 line-clamp-2">Classic Spaghetti Carbonara</p>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1 text-[10px] text-white/70">
+<span class="material-symbols-outlined !text-xs text-primary">schedule</span>
+                            20m
+                        </div>
+<div class="flex items-center gap-1 text-[10px] text-white/70">
+<span class="material-symbols-outlined !text-xs text-primary">speed</span>
+                            Easy
+                        </div>
+</div>
+</div>
+<button class="absolute top-2 right-2 size-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white">
+<span class="material-symbols-outlined !text-lg">favorite</span>
+</button>
+</div>
+<!-- Card 2 -->
+<div class="relative group aspect-[4/5] rounded-xl overflow-hidden bg-zinc-800">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Steaming bowl of miso ramen with egg" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBSsbrUWQQobgDbHdnNMvLYw44t-s80E1KR5Zcsr8mW9R8Ie12v7_NrNwjfVhHrX_i1hELaB-Jl8kz2qjnlNhOApS3YtsWNCpZgD1vHIirDjZAkDpkfYDNYxiInVLQyQearRha-IPdK-OibRNSiFb0UxqSUicI_3_wDQxsskYpv1N8RkklCP0CVwxuaFaisa9r9E3Wt-PseazGCU53Dy0xP_raet04dUwGUcZOMi0l1N9CBcmqJmDEf4PPH5MXGx_OzdLnXSjL3uv4u");'></div>
+<div class="absolute inset-0 recipe-card-gradient"></div>
+<div class="absolute inset-0 flex flex-col justify-end p-3">
+<p class="text-white text-sm font-bold leading-tight mb-2 line-clamp-2">Authentic Miso Ramen</p>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1 text-[10px] text-white/70">
+<span class="material-symbols-outlined !text-xs text-primary">schedule</span>
+                            45m
+                        </div>
+<div class="flex items-center gap-1 text-[10px] text-white/70">
+<span class="material-symbols-outlined !text-xs text-primary">speed</span>
+                            Med
+                        </div>
+</div>
+</div>
+<button class="absolute top-2 right-2 size-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white">
+<span class="material-symbols-outlined !text-lg">favorite</span>
+</button>
+</div>
+<!-- Card 3 -->
+<div class="relative group aspect-[4/5] rounded-xl overflow-hidden bg-zinc-800">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Fresh colorful summer salad with berries" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuClLUzRYSWPaurk_4TUugyOGS8u6al4dodHpRqb8RclspvZQva5huYtXuGp9WJrz3htqHUGw3tvZ8ATc46m0phMbHbaUBfIbfLFCgob_GyBrZISitNoUMl4BNZXfglFI6TItvq_YWQtglU_Wo887BWCWq5ljBITEhHUL4xlEs4mu6BI6RoA5l0ZRn-eQEOm0DNRA8Injnp_OVa89o9FcKMGHkSeUNs5UPwN-1M2LbwE8o2K8ZJ2_DaMLLTBXsF0CJEsXGF1uhfiCzs7");'></div>
+<div class="absolute inset-0 recipe-card-gradient"></div>
+<div class="absolute inset-0 flex flex-col justify-end p-3">
+<p class="text-white text-sm font-bold leading-tight mb-2 line-clamp-2">Summer Quinoa Salad</p>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1 text-[10px] text-white/70">
+<span class="material-symbols-outlined !text-xs text-primary">schedule</span>
+                            15m
+                        </div>
+<div class="flex items-center gap-1 text-[10px] text-white/70">
+<span class="material-symbols-outlined !text-xs text-primary">speed</span>
+                            Easy
+                        </div>
+</div>
+</div>
+<button class="absolute top-2 right-2 size-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white">
+<span class="material-symbols-outlined !text-lg">favorite</span>
+</button>
+</div>
+<!-- Card 4 -->
+<div class="relative group aspect-[4/5] rounded-xl overflow-hidden bg-zinc-800">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Avocado toast with poached egg" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDzWwzFQUs1gf7HNVsn8vY-MJDBsJma6LE2kbgV7h-3FEtz6TkaXO6vIxELMl1Nw_NIy0n7XxdiEALSmLVqOc4WYawLyBq_gdDUgKnndPFoFq1Jau7ULYCT9iSKRTRlJYonmjgqCB9jTVlAzNOVb7iKi1CG-WMsz4e1-wrleiZpVMtyva59-DYI_QI-_TdfhDycXoafFvyqElZMDsm9jQj-ky_5yGAHRnsXVZBDKCqbijD5E8yk2nVOseR_BDBpxo4eR3Ll2pUOfsqp");'></div>
+<div class="absolute inset-0 recipe-card-gradient"></div>
+<div class="absolute inset-0 flex flex-col justify-end p-3">
+<p class="text-white text-sm font-bold leading-tight mb-2 line-clamp-2">Smashed Avocado Toast</p>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1 text-[10px] text-white/70">
+<span class="material-symbols-outlined !text-xs text-primary">schedule</span>
+                            10m
+                        </div>
+<div class="flex items-center gap-1 text-[10px] text-white/70">
+<span class="material-symbols-outlined !text-xs text-primary">speed</span>
+                            Easy
+                        </div>
+</div>
+</div>
+<button class="absolute top-2 right-2 size-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white">
+<span class="material-symbols-outlined !text-lg">favorite</span>
+</button>
+</div>
+</div>
+<!-- Banner for AI Generator -->
+<div class="px-4 mt-2">
+<div class="relative w-full overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-orange-700 p-6 flex items-center justify-between">
+<div class="z-10 relative">
+<h3 class="text-white text-lg font-bold">Have a food photo?</h3>
+<p class="text-white/80 text-sm mt-1">Convert any meal into a recipe instantly.</p>
+<button class="mt-4 bg-white text-primary font-bold px-4 py-2 rounded-lg text-sm">Try Photo-to-Recipe</button>
+</div>
+<div class="absolute right-[-20px] bottom-[-20px] opacity-20">
+<span class="material-symbols-outlined !text-[120px] text-white">camera</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 right-0 z-50 glass px-6 py-3 pb-8 flex items-center justify-between">
+<div class="flex flex-col items-center text-primary">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] mt-1 font-medium">Home</span>
+</div>
+<div class="flex flex-col items-center text-white/50">
+<span class="material-symbols-outlined">explore</span>
+<span class="text-[10px] mt-1 font-medium">Explore</span>
+</div>
+<!-- Central AI Button -->
+<div class="relative -top-8">
+<div class="absolute inset-0 bg-primary blur-lg opacity-40 rounded-full scale-125"></div>
+<button class="relative size-14 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20 border-4 border-background-dark">
+<span class="material-symbols-outlined !text-3xl">auto_awesome</span>
+</button>
+</div>
+<div class="flex flex-col items-center text-white/50">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="text-[10px] mt-1 font-medium">Recipes</span>
+</div>
+<div class="flex flex-col items-center text-white/50">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] mt-1 font-medium">Profile</span>
+</div>
+</nav>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

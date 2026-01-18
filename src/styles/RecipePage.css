@@ -1,0 +1,216 @@
+.recipe-page {
+    min-height: 100vh;
+    padding-bottom: 4rem;
+}
+
+.loading-state {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+}
+
+.hero-section {
+    position: relative;
+    height: 60vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: flex-end;
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), #0a0a0a);
+}
+
+.hero-content {
+    position: relative;
+    width: 100%;
+    padding-bottom: 3rem;
+    z-index: 2;
+}
+
+.hero-content h1 {
+    font-size: 3.5rem;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.meta-badges {
+    display: flex;
+    gap: 1rem;
+}
+
+.badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.back-btn {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    z-index: 10;
+    padding: 0.75rem;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+}
+
+.content-container {
+    margin-top: -2rem;
+    /* Overlap effect if desired, or simple gap */
+    position: relative;
+    z-index: 3;
+}
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .grid-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+}
+
+.ingredients-panel {
+    padding: 1.5rem;
+    height: fit-content;
+    position: sticky;
+    top: 2rem;
+}
+
+.ingredients-panel h2,
+.steps-panel h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-primary);
+}
+
+.ingredients-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.ingredient-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--text-secondary);
+    border-radius: 4px;
+    margin-right: 12px;
+}
+
+.name {
+    flex: 1;
+}
+
+.qty {
+    color: var(--text-secondary);
+}
+
+.nutrition-box {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px dashed var(--border-subtle);
+}
+
+.nutrition-box h3 {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.macros {
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+}
+
+.macro div:first-child {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.macro div:last-child {
+    font-weight: 600;
+    color: var(--color-accent);
+}
+
+/* Steps */
+.search-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.step-card {
+    padding: 1.5rem;
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.step-number {
+    min-width: 40px;
+    height: 40px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: white;
+    margin-top: -5px;
+    /* Visual alignment */
+}
+
+.step-card p {
+    color: var(--text-primary);
+}
+
+.tips-section {
+    padding: 1.5rem;
+    background: rgba(46, 196, 182, 0.1);
+    border-color: rgba(46, 196, 182, 0.3);
+}
+
+.tips-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--color-accent);
+}
+
+.tips-section ul {
+    padding-left: 1.5rem;
+    color: var(--text-primary);
+}

@@ -1,0 +1,66 @@
+==========================================
+Google OAuth Configuration Information
+==========================================
+
+PACKAGE NAME:
+com.example.chefli_flutter
+
+SHA-1 CERTIFICATE FINGERPRINT (Debug):
+56:2B:F0:B5:DB:B6:6F:F0:41:6B:55:40:2F:8C:A3:5C:F0:1C:7C:6C
+
+SHA-256 CERTIFICATE FINGERPRINT (Debug):
+9A:4D:87:3B:55:31:29:A9:CA:D6:34:DE:B8:1A:0A:1E:4B:EE:FC:0C:30:32:86:92:24:CE:96:5A:F6:B5:1B:F1
+
+INSTANTDB APP ID:
+588227b6-6022-44a9-88f3-b1c2e2cce304
+
+==========================================
+Redirect Origins & URIs:
+==========================================
+
+FOR ANDROID:
+- No redirect origins/URIs needed
+- Only need: Package Name + SHA-1 (see above)
+
+FOR WEB (Flutter Web):
+Authorized JavaScript Origins:
+  - http://localhost:8080 (development)
+  - https://your-production-domain.com (production)
+
+Authorized Redirect URIs:
+  - http://localhost:8080/auth/google/callback (development)
+  - https://your-production-domain.com/auth/google/callback (production)
+
+==========================================
+Next Steps:
+==========================================
+
+1. Go to Google Cloud Console:
+   https://console.cloud.google.com
+
+2. Create OAuth 2.0 Client ID (Android):
+   - Application type: Android
+   - Package name: com.example.chefli_flutter
+   - SHA-1: 56:2B:F0:B5:DB:B6:6F:F0:41:6B:55:40:2F:8C:A3:5C:F0:1C:7C:6C
+   - No redirect origins/URIs needed for Android
+
+3. Create OAuth 2.0 Client ID (Web):
+   - Application type: Web application
+   - Authorized JavaScript origins:
+     * http://localhost:8080
+   - Authorized redirect URIs:
+     * http://localhost:8080/auth/google/callback
+
+4. Copy the Client IDs and add to:
+   chefli_flutter/lib/config/instantdb_config.dart
+
+5. Configure InstantDB Dashboard:
+   - Go to: https://www.instantdb.com/dash
+   - App ID: 588227b6-6022-44a9-88f3-b1c2e2cce304
+   - Enable Google OAuth
+   - Add your Google Client IDs
+
+See GOOGLE_OAUTH_SETUP.md and GOOGLE_REDIRECT_ORIGINS.md for detailed instructions.
+
+==========================================
+

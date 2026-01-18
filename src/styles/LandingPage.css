@@ -1,0 +1,118 @@
+.landing-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at top right, #1a1a1a, #0a0a0a);
+    padding: 1rem;
+}
+
+.content-wrapper {
+    width: 100%;
+    max-width: 800px;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+}
+
+.input-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.main-input {
+    width: 100%;
+    min-height: 150px;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    resize: vertical;
+    transition: var(--transition-fast);
+}
+
+.main-input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--color-primary);
+}
+
+.media-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.media-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    transition: var(--transition-fast);
+}
+
+.media-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--color-accent);
+}
+
+.templates-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.template-chip {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.template-chip:hover {
+    color: var(--text-primary);
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.cook-button {
+    margin-top: 1rem;
+    padding: 1rem 3rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    border-radius: 50px;
+    background: linear-gradient(135deg, var(--color-primary), #FF9F1C);
+    color: white;
+    box-shadow: var(--glow-primary);
+    align-self: center;
+    transition: var(--transition-smooth);
+}
+
+.cook-button:hover {
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.6);
+}

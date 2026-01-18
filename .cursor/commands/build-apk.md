@@ -1,0 +1,1 @@
+build the latest apk with all the latest change and install on my device

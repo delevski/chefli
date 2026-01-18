@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Chefli Recipe Details</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f48c25",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#181411",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-overlay {
+            background: rgba(24, 20, 17, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .step-number {
+            background: linear-gradient(135deg, #f48c25 0%, #d46b08 100%);
+        }
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white min-h-screen">
+<div class="relative max-w-md mx-auto min-h-screen flex flex-col shadow-2xl overflow-x-hidden">
+<!-- Top App Bar (Sticky) -->
+<div class="fixed top-0 z-50 w-full max-w-md flex items-center justify-between p-4 bg-transparent">
+<button class="flex size-10 items-center justify-center rounded-full glass-overlay text-white">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</button>
+<div class="flex gap-2">
+<button class="flex size-10 items-center justify-center rounded-full glass-overlay text-white">
+<span class="material-symbols-outlined">share</span>
+</button>
+<button class="flex size-10 items-center justify-center rounded-full glass-overlay text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">favorite</span>
+</button>
+</div>
+</div>
+<!-- Hero Section with Glassmorphic Overlay -->
+<div class="relative w-full h-[460px]">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Gourmet pan-seared scallops with butter sauce" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDoJLKG3foN-XCJ-L6D4qKRHi4jP-OunWOPeShgWFzht-rHxs1WGmCsF1fCjAz998LDdKSWAOkoKWq93kQ8M9LzDYdkxsGNiwYVSHI6LVxg2eboCyRbjwZdbseFA8Ob-XwLUNi7SOt9UMG6g3evFgdMulVeXBsoVMe9cGTnGG09gvwSODg2KHmW-_XdfSJUC-2enA3sz_Dq4JRJlI0hdTFo9Umj0rmfYtuF-IH9yQWhBVSkRy2vLWpZc0sbCYE3qh6mrxcM9F0Y4-oI');">
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark/80 via-transparent to-transparent"></div>
+</div>
+<!-- Glassmorphic Title Card -->
+<div class="absolute bottom-6 left-4 right-4 glass-overlay p-5 rounded-xl">
+<h1 class="text-white text-3xl font-bold leading-tight mb-3">Pan-Seared Scallops</h1>
+<div class="flex gap-3">
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10">
+<span class="material-symbols-outlined text-primary text-sm">schedule</span>
+<span class="text-white text-xs font-semibold">25 min</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10">
+<span class="material-symbols-outlined text-primary text-sm">bar_chart</span>
+<span class="text-white text-xs font-semibold">Medium</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10">
+<span class="material-symbols-outlined text-primary text-sm">local_fire_department</span>
+<span class="text-white text-xs font-semibold">450 kcal</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Content Section -->
+<div class="px-4 py-6 space-y-8 pb-32">
+<!-- Ingredients Section -->
+<section>
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-xl font-bold tracking-tight">Ingredients</h2>
+<span class="text-sm font-medium text-primary">2 servings</span>
+</div>
+<div class="space-y-1 bg-white/5 dark:bg-white/5 rounded-xl p-2 border border-white/5">
+<label class="flex items-center gap-x-4 py-3.5 px-3 border-b border-white/5 last:border-0">
+<input checked="" class="h-6 w-6 rounded border-white/20 bg-transparent text-primary focus:ring-primary focus:ring-offset-0 checked:bg-primary" type="checkbox"/>
+<p class="text-base font-medium">1 lb Large Sea Scallops</p>
+</label>
+<label class="flex items-center gap-x-4 py-3.5 px-3 border-b border-white/5 last:border-0">
+<input class="h-6 w-6 rounded border-white/20 bg-transparent text-primary focus:ring-primary focus:ring-offset-0 checked:bg-primary" type="checkbox"/>
+<p class="text-base font-medium">2 tbsp Unsalted Butter</p>
+</label>
+<label class="flex items-center gap-x-4 py-3.5 px-3 border-b border-white/5 last:border-0">
+<input class="h-6 w-6 rounded border-white/20 bg-transparent text-primary focus:ring-primary focus:ring-offset-0 checked:bg-primary" type="checkbox"/>
+<p class="text-base font-medium">3 cloves Garlic, minced</p>
+</label>
+<label class="flex items-center gap-x-4 py-3.5 px-3 border-b border-white/5 last:border-0">
+<input class="h-6 w-6 rounded border-white/20 bg-transparent text-primary focus:ring-primary focus:ring-offset-0 checked:bg-primary" type="checkbox"/>
+<p class="text-base font-medium">Fresh Parsley &amp; Lemon</p>
+</label>
+</div>
+</section>
+<!-- Instructions Section -->
+<section>
+<h2 class="text-xl font-bold tracking-tight mb-4">Instructions</h2>
+<div class="space-y-4">
+<!-- Step 1 -->
+<div class="flex gap-4 p-4 rounded-xl bg-white/5 border border-white/5">
+<div class="flex-shrink-0">
+<div class="step-number w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-primary/20">1</div>
+</div>
+<div class="space-y-1">
+<h3 class="font-bold text-lg">Prep Scallops</h3>
+<p class="text-sm opacity-70 leading-relaxed">Remove the side muscle from the scallops. Pat them very dry with paper towels to ensure a good sear.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex gap-4 p-4 rounded-xl bg-white/5 border border-white/5">
+<div class="flex-shrink-0">
+<div class="step-number w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-primary/20">2</div>
+</div>
+<div class="space-y-1">
+<h3 class="font-bold text-lg">Heat the Pan</h3>
+<p class="text-sm opacity-70 leading-relaxed">Add oil to a large skillet over high heat until it just begins to smoke. Salt the scallops just before cooking.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex gap-4 p-4 rounded-xl bg-white/5 border border-white/5">
+<div class="flex-shrink-0">
+<div class="step-number w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-primary/20">3</div>
+</div>
+<div class="space-y-1">
+<h3 class="font-bold text-lg">The Sear</h3>
+<p class="text-sm opacity-70 leading-relaxed">Place scallops in the pan. Do not crowd. Sear for 2 minutes without moving until a golden crust forms.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Nutrition Section -->
+<section>
+<h2 class="text-xl font-bold tracking-tight mb-4">Nutrition Facts</h2>
+<div class="grid grid-cols-4 gap-3">
+<div class="bg-primary/10 rounded-xl p-3 flex flex-col items-center border border-primary/20">
+<span class="text-xs opacity-60 font-medium">Protein</span>
+<span class="text-lg font-bold text-primary">28g</span>
+</div>
+<div class="bg-white/5 rounded-xl p-3 flex flex-col items-center border border-white/5">
+<span class="text-xs opacity-60 font-medium">Carbs</span>
+<span class="text-lg font-bold">12g</span>
+</div>
+<div class="bg-white/5 rounded-xl p-3 flex flex-col items-center border border-white/5">
+<span class="text-xs opacity-60 font-medium">Fats</span>
+<span class="text-lg font-bold">18g</span>
+</div>
+<div class="bg-white/5 rounded-xl p-3 flex flex-col items-center border border-white/5">
+<span class="text-xs opacity-60 font-medium">Fiber</span>
+<span class="text-lg font-bold">1g</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Sticky Bottom CTA -->
+<div class="fixed bottom-0 left-0 right-0 p-4 pb-8 bg-gradient-to-t from-background-dark via-background-dark/95 to-transparent z-50 flex justify-center w-full max-w-md mx-auto">
+<button class="w-full bg-primary hover:bg-orange-600 text-white font-bold h-14 rounded-xl flex items-center justify-center gap-3 shadow-xl shadow-primary/30 transition-all active:scale-95">
+<span class="material-symbols-outlined">play_circle</span>
+<span>START COOKING</span>
+</button>
+</div>
+</div>
+</body></html>

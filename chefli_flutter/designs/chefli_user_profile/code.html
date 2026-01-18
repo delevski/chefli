@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Chefli User Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f48c25",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#0a0a0a",
+                        "glass-dark": "rgba(34, 25, 16, 0.7)",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-effect {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display min-h-screen">
+<!-- Top Navigation Bar -->
+<div class="sticky top-0 z-50 glass-effect bg-white/70 dark:bg-background-dark/70 px-4 py-3 flex items-center justify-between">
+<h2 class="text-xl font-bold tracking-tight">Profile</h2>
+<div class="flex gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-2xl">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-2xl">settings</span>
+</button>
+</div>
+</div>
+<main class="max-w-md mx-auto pb-24">
+<!-- Profile Header Section -->
+<div class="flex flex-col items-center pt-8 pb-6 px-4">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-32 w-32 border-4 border-primary ring-4 ring-primary/20" data-alt="User profile picture of a smiling chef" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBybRr_9fdLtYJtfFJQqNAfI7iRcnO82qSPs1tFUv22ZXpdKgpYTufsYlrum9VK8WdhCtRyWHb8N6m1ZqQqyQBZVTFnxZLcHY1eI9dJ-xn3SoqV095GWXDOhcoH-X8isiZCS3r0MT0ldSGsnxBcYIh68-A-CnltWPdwARRuPCxWYyqU92r5D7FwWMM1fX2c_LpYMldF25KQdXgrIkO2Dw-MT4Ay0xSmhp6FZN133O7VTrQTZ3de8K9f1vBgfjM5dvzbjTGeuftMAbcR");'>
+</div>
+<div class="absolute bottom-0 right-0 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg border-2 border-background-dark">
+                    PRO
+                </div>
+</div>
+<div class="mt-4 text-center">
+<h1 class="text-2xl font-bold tracking-tight">Alex Chefson</h1>
+<p class="text-slate-500 dark:text-[#baab9c] text-sm font-medium">@alexchefson</p>
+<p class="text-slate-600 dark:text-[#baab9c] text-sm mt-1 max-w-[250px]">Culinary Enthusiast &amp; Flavor Explorer</p>
+</div>
+</div>
+<!-- Action/Status Panel -->
+<div class="px-4 mb-4">
+<div class="glass-effect rounded-xl p-5 bg-white/50 dark:bg-glass-dark flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl">workspace_premium</span>
+</div>
+<div>
+<p class="text-sm font-bold uppercase tracking-wider text-primary">Chef Level 14</p>
+<p class="text-lg font-bold">Master Saucier</p>
+</div>
+</div>
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-slate-300 dark:bg-[#393028] p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary transition-all">
+<div class="h-full w-[27px] rounded-full bg-white shadow-md"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+<!-- Progress Bar Section -->
+<div class="px-4 mb-6">
+<div class="glass-effect rounded-xl p-4 bg-white/50 dark:bg-glass-dark">
+<div class="flex justify-between items-end mb-2">
+<p class="text-sm font-semibold opacity-80">Next Rank: Master Chef</p>
+<p class="text-xs font-medium text-primary">1,500 / 2,000 XP</p>
+</div>
+<div class="h-2 w-full bg-slate-200 dark:bg-[#54473b] rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 75%;"></div>
+</div>
+</div>
+</div>
+<!-- Stats Row -->
+<div class="flex gap-3 px-4 mb-8">
+<div class="flex-1 glass-effect rounded-xl p-3 bg-white/50 dark:bg-glass-dark flex flex-col items-center">
+<span class="text-2xl font-bold tracking-tight">124</span>
+<span class="text-[10px] uppercase font-bold text-slate-500 dark:text-[#baab9c]">Recipes</span>
+</div>
+<div class="flex-1 glass-effect rounded-xl p-3 bg-white/50 dark:bg-glass-dark flex flex-col items-center">
+<span class="text-2xl font-bold tracking-tight">1.2k</span>
+<span class="text-[10px] uppercase font-bold text-slate-500 dark:text-[#baab9c]">Followers</span>
+</div>
+<div class="flex-1 glass-effect rounded-xl p-3 bg-white/50 dark:bg-glass-dark flex flex-col items-center border-primary/30">
+<span class="text-2xl font-bold tracking-tight">48</span>
+<span class="text-[10px] uppercase font-bold text-slate-500 dark:text-[#baab9c]">Created</span>
+</div>
+</div>
+<!-- Recipe History Header -->
+<div class="px-4 mb-4 flex items-center justify-between">
+<h3 class="text-lg font-bold">Recent Generations</h3>
+<button class="text-primary text-sm font-bold">View All</button>
+</div>
+<!-- RecipeHistoryList -->
+<div class="px-4 space-y-3">
+<!-- Recipe Card 1 -->
+<div class="glass-effect rounded-xl overflow-hidden bg-white/50 dark:bg-glass-dark flex p-3 gap-4 items-center">
+<div class="w-20 h-20 rounded-lg bg-center bg-cover flex-shrink-0" data-alt="Vibrant bowl of spicy vodka pasta with basil" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBXHhlEcL0VdcTjw9J1ZFF0jAk2ngMGkGsW8PQ8GfJD1rzIVVeIJJCA3ns1Uk7F20Z5tehLzVkn0AVqST5_15qHbNyJlHvYicG1ufcTYrYsO19W9TYfs8QZwFVL0P6TwIvlKL2s4pBDVcy3Peb3GVsCmqBbxbmj6Np1fX41Rfu0rwYgJOEZRGRgPUcBDpkjZG3Qtu69j1ojqMqkFaiZPsWexy5zvI6usowqlOr1d0RLtsODoH5IK1OBfPAOhG3UlTJ2zsoo4oE0zWnO");'>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1 mb-1">
+<span class="material-symbols-outlined text-[14px] text-primary">description</span>
+<span class="text-[10px] font-bold text-primary uppercase">From Text</span>
+</div>
+<h4 class="font-bold text-base truncate">Spicy Vodka Pasta</h4>
+<p class="text-xs text-slate-500 dark:text-[#baab9c]">Generated Oct 24, 2023</p>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+<!-- Recipe Card 2 -->
+<div class="glass-effect rounded-xl overflow-hidden bg-white/50 dark:bg-glass-dark flex p-3 gap-4 items-center">
+<div class="w-20 h-20 rounded-lg bg-center bg-cover flex-shrink-0" data-alt="Herb crusted salmon on a wooden plate" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAUUYzvMLi5r7HgW9lBlbowu39xWp-sNksTEAPrHYaWd568Eh9dWdQ4H_456Z7ecU_BGnXzFXcnmrLdsxivCTpN4aKuE4PHdyizv2CuQVOmMG6dOs9EgcNT0aKZojxfv1yN4XHYca86zvBEKCs3gX_hzcQEOStz2BkoTDZrfp-EHzI9qHiyCjgGzDMfT78cZFfdgMGr6LAD4BzMbO7eGnJClH7erbwdmw-qnzIea1mjUcLEe3lGDX3gJ5mfZ_zoXXFzeBuODgVN6mUr");'>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1 mb-1">
+<span class="material-symbols-outlined text-[14px] text-primary">photo_camera</span>
+<span class="text-[10px] font-bold text-primary uppercase">From Photo</span>
+</div>
+<h4 class="font-bold text-base truncate">Herb-Crusted Salmon</h4>
+<p class="text-xs text-slate-500 dark:text-[#baab9c]">Generated Oct 21, 2023</p>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+<!-- Recipe Card 3 -->
+<div class="glass-effect rounded-xl overflow-hidden bg-white/50 dark:bg-glass-dark flex p-3 gap-4 items-center">
+<div class="w-20 h-20 rounded-lg bg-center bg-cover flex-shrink-0" data-alt="Close up of a miso ramen bowl with egg" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCh_CxfeqWiKS_amH4Kslht9JuC2ReAWKFW8muaGCI7UHS6EnPQCLb3_2Y11L_-dAO4R8ls_H8JytLbpbY3bYL8e27yHc9RODIpZy_IhmL8xL5-foa_RKDla2BZAu2EgQuADuIj4FL8kdB0rg98PlSCpAVvu0c8nNhC4a7lvHENt_1xmZETCuZNkTQ8gZSH5qOHgSW9BlB62VHTP5xHk4WutwYh7JrKFvmQ6srT4b2zjiZB0wYWoxIbDtGuUy17Hv7a8Qf6tsRG5H_H");'>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1 mb-1">
+<span class="material-symbols-outlined text-[14px] text-primary">mic</span>
+<span class="text-[10px] font-bold text-primary uppercase">From Audio</span>
+</div>
+<h4 class="font-bold text-base truncate">Midnight Miso Ramen</h4>
+<p class="text-xs text-slate-500 dark:text-[#baab9c]">Generated Oct 18, 2023</p>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (iOS Style) -->
+<nav class="fixed bottom-0 left-0 right-0 glass-effect bg-white/80 dark:bg-background-dark/80 border-t border-white/10 px-6 py-3 pb-8 flex justify-between items-center z-50">
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-white/40">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-white/40">
+<span class="material-symbols-outlined">search</span>
+<span class="text-[10px] font-medium">Explore</span>
+</button>
+<div class="relative -top-6">
+<button class="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center shadow-lg shadow-primary/40 ring-4 ring-background-dark">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</div>
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-white/40">
+<span class="material-symbols-outlined">book</span>
+<span class="text-[10px] font-medium">Library</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</button>
+</nav>
+</body></html>
