@@ -167,11 +167,14 @@ app.post('/api/speech/transcribe', upload.single('audio'), async (req, res) => {
       contentType: req.file.mimetype || 'audio/mpeg',
     });
 
+    // Get headers from form-data package (includes Content-Type with boundary)
+    const formHeaders = formData.getHeaders ? formData.getHeaders() : {};
+    
     const uploadResponse = await fetch('https://api.assemblyai.com/v2/upload', {
       method: 'POST',
       headers: {
         'authorization': apiKey,
-        ...formData.getHeaders(), // Include form-data headers
+        ...formHeaders, // Include form-data headers (Content-Type with boundary)
       },
       body: formData,
     });
