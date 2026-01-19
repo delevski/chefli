@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import { generateRecipe } from '../services/recipeService';
 import { db } from '../db/schema';
 import { useAuth } from './AuthContext';
@@ -27,7 +27,7 @@ export const RecipeProvider = ({ children }) => {
   const { data, isLoading: dbLoading } = db.useQuery({ recipes: {} });
 
   // Debug logging for InstantDB query
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       console.log('🔍 InstantDB Query Status:', { 
         isLoading: dbLoading, 
@@ -44,7 +44,7 @@ export const RecipeProvider = ({ children }) => {
   }, [data, dbLoading]);
 
   // Transform InstantDB recipes to app format
-  const recipes = React.useMemo(() => {
+  const recipes = useMemo(() => {
     if (!data?.recipes || !user) {
       console.log('⚠️ No recipes found in InstantDB data or user not logged in');
       return {};

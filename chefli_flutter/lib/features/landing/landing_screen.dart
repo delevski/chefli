@@ -526,41 +526,52 @@ class _LandingScreenState extends State<LandingScreen> {
         child: Stack(
           children: [
             // Background Glows
-            Positioned(
-              top: -40,
-              right: -40,
-              child: Container(
-                width: 400,
-                height: 400,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      ChefliTheme.primary.withOpacity(0.15),
-                      Colors.transparent,
-                    ],
-                    stops: const [0.0, 0.7],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: -20,
-              left: -40,
-              child: Container(
-                width: 500,
-                height: 500,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      ChefliTheme.accent.withOpacity(0.1),
-                      Colors.transparent,
-                    ],
-                    stops: const [0.0, 0.7],
-                  ),
-                ),
-              ),
+            Builder(
+              builder: (context) {
+                final isDark = Theme.of(context).brightness == Brightness.dark;
+                final primaryGlowOpacity = isDark ? 0.15 : 0.08;
+                final accentGlowOpacity = isDark ? 0.1 : 0.05;
+                return Stack(
+                  children: [
+                    Positioned(
+                      top: -40,
+                      right: -40,
+                      child: Container(
+                        width: 400,
+                        height: 400,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [
+                              ChefliTheme.primary.withOpacity(primaryGlowOpacity),
+                              Colors.transparent,
+                            ],
+                            stops: const [0.0, 0.7],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: -20,
+                      left: -40,
+                      child: Container(
+                        width: 500,
+                        height: 500,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [
+                              ChefliTheme.accent.withOpacity(accentGlowOpacity),
+                              Colors.transparent,
+                            ],
+                            stops: const [0.0, 0.7],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
 
             // Top App Bar (no mock status bar)

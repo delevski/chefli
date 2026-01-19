@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -14,20 +13,18 @@ function App() {
     <ErrorBoundary>
       <LanguageProvider>
         <AuthProvider>
-          <ErrorBoundary>
-            <RecipeProvider>
-              <Router>
-                <div className="app-container">
-                  <Routes>
-                    <Route path="/" element={<LandingPage />} />
-                    <Route path="/home" element={<HomePage />} />
-                    <Route path="/recipe/:id" element={<RecipePage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
-                  </Routes>
-                </div>
-              </Router>
-            </RecipeProvider>
-          </ErrorBoundary>
+          <RecipeProvider>
+            <Router>
+              <div className="app-container">
+                <Routes>
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/home" element={<HomePage />} />
+                  <Route path="/recipe/:id" element={<RecipePage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                </Routes>
+              </div>
+            </Router>
+          </RecipeProvider>
         </AuthProvider>
       </LanguageProvider>
     </ErrorBoundary>

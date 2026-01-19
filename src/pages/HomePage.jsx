@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import PresetCard from '../components/features/PresetCard';
 import '../styles/HomePage.css';

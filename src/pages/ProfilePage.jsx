@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { User, LogOut, BookOpen } from 'lucide-react';
 import PresetCard from '../components/features/PresetCard';

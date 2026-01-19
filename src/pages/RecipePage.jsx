@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Clock, TrendingUp, ChevronLeft, CheckCircle, Info, Flame } from 'lucide-react';
 import { motion } from 'framer-motion';

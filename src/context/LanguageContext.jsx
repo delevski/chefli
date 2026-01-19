@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { getTranslation, getProcessingPhases, getQuotes, getDifficulty } from '../services/localization';
 
 const LanguageContext = createContext();

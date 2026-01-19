@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import { X, Utensils, Flame, Soup } from 'lucide-react';
 import { motion, useAnimation, useMotionValue, useTransform } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
@@ -192,10 +192,10 @@ const ProcessingPage = ({ onComplete }) => {
             dir={isRTL ? 'rtl' : 'ltr'}
           >
             {t('chefliCraftingMasterpiece').split('\n').map((line, i) => (
-              <React.Fragment key={i}>
+              <Fragment key={i}>
                 {line}
                 {i < 1 && <br />}
-              </React.Fragment>
+              </Fragment>
             ))}
           </motion.h1>
 
