@@ -1,5 +1,8 @@
 import { motion } from 'framer-motion';
-import { User, LogOut, BookOpen } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { User, LogOut, BookOpen, Settings } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import PresetCard from '../components/features/PresetCard';
 import '../styles/ProfilePage.css';
 
@@ -9,26 +12,49 @@ const MOCK_HISTORY = [
 ];
 
 const ProfilePage = () => {
+    const navigate = useNavigate();
+    const { user, logout } = useAuth();
+    const { t } = useLanguage();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
+
     return (
         <div className="profile-container container">
+            <div className="profile-nav">
+                <Link to="/settings" className="nav-btn glass-panel">
+                    <Settings size={20} />
+                </Link>
+            </div>
             <div className="profile-header glass-panel">
                 <div className="user-info">
                     <div className="avatar">
-                        <User size={40} />
+                        {user?.photoUrl ? (
+                            <img src={user.photoUrl} alt={user.name || 'User'} />
+                        ) : (
+                            <User size={40} />
+                        )}
                     </div>
                     <div className="details">
-                        <h2>Chef John Doe</h2>
-                        <p>Master of the Kitchen</p>
+                        <h2>{user?.name || 'Chef'}</h2>
+                        <p>{user?.email || 'Master of the Kitchen'}</p>
                     </div>
                 </div>
-                <button className="logout-btn">
+                <button className="logout-btn" onClick={handleLogout}>
                     <LogOut size={20} />
-                    Logout
+                    {t('logout')}
                 </button>
             </div>
 
             <div className="history-section">
-                <h3><BookOpen size={20} /> Recipe History</h3>
+                <div className="section-header">
+                    <h3><BookOpen size={20} /> {t('savedRecipes')}</h3>
+                    <Link to="/saved" className="view-all-link">
+                        {t('viewAll')}
+                    </Link>
+                </div>
                 <div className="history-grid">
                     {MOCK_HISTORY.map(dish => (
                         <div key={dish.id} className="history-item-wrapper">

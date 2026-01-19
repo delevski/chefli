@@ -13,8 +13,14 @@ import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
 import FormData from 'form-data';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { createWorker } from 'tesseract.js';
 import { setupExpressRoutes } from './instantdb-proxy.js';
+
+// ES Module path resolution
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,6 +34,12 @@ const upload = multer({
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from dist folder in production
+const distPath = path.join(__dirname, '../dist');
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(distPath));
+}
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -240,10 +252,20 @@ app.post('/api/speech/transcribe', upload.single('audio'), async (req, res) => {
   }
 });
 
+// SPA catch-all route - serve index.html for all non-API routes (must be after all API routes)
+if (process.env.NODE_ENV === 'production') {
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 InstantDB Backend Proxy running on http://localhost:${PORT}`);
   console.log(`📡 Health check: http://localhost:${PORT}/health`);
+  if (process.env.NODE_ENV === 'production') {
+    console.log(`🌐 Serving webapp from: ${distPath}`);
+  }
   console.log(`\nAvailable endpoints:`);
   console.log(`  POST /api/users/create`);
   console.log(`  POST /api/users/find`);

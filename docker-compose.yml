@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  chefli:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - INSTANTDB_ADMIN_TOKEN=${INSTANTDB_ADMIN_TOKEN}
+      - LANGCHAIN_URL=${LANGCHAIN_URL:-https://ordi1985.pythonanywhere.com/generate-recipe}
+      - ASSEMBLYAI_API_KEY=${ASSEMBLYAI_API_KEY}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  # Development service - runs both backend and webapp with hot reload
+  chefli-dev:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+    command: sh -c "npm install && npm run dev:all"
+    profiles:
+      - dev

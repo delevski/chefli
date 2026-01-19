@@ -104,6 +104,19 @@ button {
   background: var(--text-muted);
 }
 
+/* Light Theme */
+[data-theme="light"] {
+  --bg-main: #F5F3F0;
+  --bg-surface: #FAF9F7;
+  --bg-glass: rgba(255, 255, 255, 0.6);
+  --text-primary: #1F1F1F;
+  --text-secondary: #6B6B6B;
+  --text-muted: #9B9B9B;
+  --border-subtle: rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+  --glow-primary: 0 0 20px rgba(255, 107, 53, 0.3);
+}
+
 /* RTL Support */
 [dir="rtl"] {
   direction: rtl;

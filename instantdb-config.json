@@ -1,0 +1,35 @@
+{
+  "appId": "588227b6-6022-44a9-88f3-b1c2e2cce304",
+  "baseUrl": "https://api.instantdb.com",
+  "endpoints": {
+    "discovered": [
+      "/admin/query",
+      "/admin/transact",
+      "/admin/subscribe-query",
+      "/admin/users",
+      "/admin/rooms",
+      "/admin/sign",
+      "/admin/refresh",
+      "/admin/magic",
+      "/admin/send",
+      "/admin/verify",
+      "/runtime/auth",
+      "/admin/storage",
+      "/files/delete",
+      "/docs/backend",
+      "/docs/http-api",
+      "/docs/permissions",
+      "/docs/instaql",
+      "/docs/instaml",
+      "/docs/presence-and-topics",
+      "/docs/auth",
+      "/docs/storage"
+    ]
+  },
+  "auth": {
+    "googleOAuth": {
+      "enabled": true,
+      "note": "Google OAuth configuration found in docs"
+    }
+  }
+}

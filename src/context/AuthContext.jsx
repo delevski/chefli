@@ -67,6 +67,17 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  // Sign in with Google (called after credential is processed)
+  const loginWithGoogle = useCallback(async () => {
+    // Refresh user from localStorage after Google sign-in
+    const currentUser = getCurrentUser();
+    if (currentUser) {
+      setUser(currentUser);
+      return currentUser;
+    }
+    throw new Error('Failed to get user after Google sign-in');
+  }, []);
+
   // Sign out
   const logout = useCallback(() => {
     signOut();
@@ -81,6 +92,7 @@ export const AuthProvider = ({ children }) => {
     isLoggedIn: !!user,
     register,
     login,
+    loginWithGoogle,
     logout,
   };
 

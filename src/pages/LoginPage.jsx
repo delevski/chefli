@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { handleGoogleCredential } from '../services/authService';
 import '../styles/LoginPage.css';
 
 const LoginPage = ({ onLoginSuccess, onClose }) => {
@@ -13,9 +14,63 @@ const LoginPage = ({ onLoginSuccess, onClose }) => {
   const [isCreateAccount, setIsCreateAccount] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const googleButtonRef = useRef(null);
   
-  const { login, register } = useAuth();
+  const { login, register, loginWithGoogle } = useAuth();
   const { t, isRTL } = useLanguage();
+
+  // Initialize Google Sign-In button
+  useEffect(() => {
+    const initGoogleSignIn = () => {
+      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+      if (!clientId) return;
+
+      // Wait for Google Identity Services to load
+      if (typeof window.google === 'undefined' || !window.google.accounts) {
+        setTimeout(initGoogleSignIn, 100);
+        return;
+      }
+
+      if (googleButtonRef.current) {
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: async (response) => {
+            try {
+              await handleGoogleSignIn(response.credential);
+            } catch (err) {
+              setError(err.message || 'Failed to sign in with Google');
+            }
+          },
+        });
+
+        window.google.accounts.id.renderButton(googleButtonRef.current, {
+          theme: 'outline',
+          size: 'large',
+          width: '100%',
+          text: 'signin_with',
+        });
+      }
+    };
+
+    initGoogleSignIn();
+  }, []);
+
+  const handleGoogleSignIn = async (credential) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const user = await handleGoogleCredential(credential);
+      // Update auth context by calling loginWithGoogle which reads from localStorage
+      await loginWithGoogle();
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to sign in with Google');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,7 +123,7 @@ const LoginPage = ({ onLoginSuccess, onClose }) => {
             <p>{isCreateAccount ? t('dontHaveAccount') : t('alreadyHaveAccount')}</p>
           </motion.div>
 
-          <form onSubmit={handleSubmit} className="login-form">
+          <form onSubmit={handleSubmit} className="login-form" onClick={(e) => e.stopPropagation()}>
             {isCreateAccount && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -141,16 +196,24 @@ const LoginPage = ({ onLoginSuccess, onClose }) => {
               </motion.div>
             )}
 
-            <motion.button
+            <button
               type="submit"
               className="submit-btn"
               disabled={isLoading}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              onClick={(e) => e.stopPropagation()}
             >
               {isLoading ? t('loading') : (isCreateAccount ? t('createAccount') : t('signIn'))}
-            </motion.button>
+            </button>
           </form>
+
+          {import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+            <div className="google-signin-section">
+              <div className="divider">
+                <span>{t('or')}</span>
+              </div>
+              <div ref={googleButtonRef} className="google-signin-button"></div>
+            </div>
+          )}
 
           <div className="login-footer">
             <button

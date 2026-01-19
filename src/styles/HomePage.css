@@ -1,6 +1,30 @@
 .home-container {
     padding-top: 4rem;
     padding-bottom: 4rem;
+    position: relative;
+}
+
+.home-nav {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.75rem;
+    z-index: 10;
+}
+
+.nav-btn {
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    color: var(--text-primary);
+}
+
+.nav-btn:hover {
+    transform: translateY(-2px);
+    color: var(--color-primary);
 }
 
 .home-header {

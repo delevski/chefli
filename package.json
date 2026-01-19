@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:webapp": "vite",
+    "dev:backend": "node backend/server.js",
+    "dev:all": "concurrently \"npm run dev:backend\" \"npm run dev:webapp\" --names \"backend,webapp\" --prefix-colors \"blue,green\"",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -12,7 +15,8 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
     "backend": "node backend/server.js",
-    "backend:dev": "node --watch backend/server.js"
+    "backend:dev": "node --watch backend/server.js",
+    "verify:config": "node scripts/verify-config.js"
   },
   "dependencies": {
     "@instantdb/admin": "^0.22.105",
@@ -36,6 +40,7 @@
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
+    "concurrently": "^9.2.1",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",

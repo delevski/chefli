@@ -1,10 +1,37 @@
 .landing-container {
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     background: radial-gradient(circle at top right, #1a1a1a, #0a0a0a);
     padding: 1rem;
+    position: relative;
+}
+
+.landing-header {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.75rem;
+    z-index: 10;
+}
+
+.settings-btn,
+.profile-btn {
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    color: var(--text-primary);
+}
+
+.settings-btn:hover,
+.profile-btn:hover {
+    transform: translateY(-2px);
+    color: var(--color-primary);
 }
 
 .content-wrapper {

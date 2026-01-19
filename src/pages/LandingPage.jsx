@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Upload, Mic, Video, Image as ImageIcon } from 'lucide-react';
+import { Upload, Mic, Video, Image as ImageIcon, Settings, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useRecipe } from '../context/RecipeContext';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -68,6 +68,16 @@ const LandingPage = () => {
     return (
         <>
             <div className="landing-container">
+                <div className="landing-header">
+                    <Link to="/settings" className="settings-btn glass-panel">
+                        <Settings size={20} />
+                    </Link>
+                    {isLoggedIn && (
+                        <Link to="/profile" className="profile-btn glass-panel">
+                            <User size={20} />
+                        </Link>
+                    )}
+                </div>
                 <div className="content-wrapper glass-panel">
                     <motion.h1
                         className="hero-title text-gradient"

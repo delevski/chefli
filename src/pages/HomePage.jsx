@@ -10,8 +10,20 @@ const PRESETS = [
 ];
 
 const HomePage = () => {
+    const { isLoggedIn } = useAuth();
+
     return (
         <div className="home-container container">
+            <div className="home-nav">
+                <Link to="/settings" className="nav-btn glass-panel">
+                    <Settings size={20} />
+                </Link>
+                {isLoggedIn && (
+                    <Link to="/profile" className="nav-btn glass-panel">
+                        <User size={20} />
+                    </Link>
+                )}
+            </div>
             <header className="home-header">
                 <h1 className="text-gradient">Quick Menu</h1>
                 <p className="subtitle">Choose a classic or create your own.</p>
