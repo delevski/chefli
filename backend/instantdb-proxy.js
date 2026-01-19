@@ -12,9 +12,15 @@ import { init, id } from '@instantdb/admin';
 const APP_ID = '588227b6-6022-44a9-88f3-b1c2e2cce304';
 const ADMIN_TOKEN = process.env.INSTANTDB_ADMIN_TOKEN || '8dce07c0-bfa7-49b3-b158-dc9b08294aca';
 
+// Validate admin token
+if (!ADMIN_TOKEN || ADMIN_TOKEN.trim() === '') {
+  console.error('❌ INSTANTDB_ADMIN_TOKEN is not set or empty!');
+  throw new Error('INSTANTDB_ADMIN_TOKEN environment variable is required');
+}
+
 const db = init({
   appId: APP_ID,
-  adminToken: ADMIN_TOKEN,
+  adminToken: ADMIN_TOKEN.trim(), // Ensure no extra whitespace
 });
 
 /**
