@@ -1,4 +1,5 @@
 import { db, id } from '../db/schema';
+import { getCurrentUser } from './authService';
 
 class InstantDBService {
   /**
@@ -10,19 +11,28 @@ class InstantDBService {
     try {
       const tx = db.tx;
       
+      // Get authenticated user
+      const currentUser = getCurrentUser();
+      if (!currentUser) {
+        throw new Error('User must be logged in to save recipes');
+      }
+      
       // Use InstantDB's id() function to generate proper UUID
       const entityId = id();
       
       // Transform recipe to InstantDB format
       recipeData = {
         recipeId: recipe.recipeId || entityId,
-        userId: recipe.userId || 'user-1',
+        userId: currentUser.id, // Use authenticated user's ID
         dishName: recipe.dishName,
         shortDescription: recipe.shortDescription || '',
         imageUrl: recipe.image?.value || recipe.imageUrl || '',
         prepTimeMinutes: recipe.prepTimeMinutes || 20,
         difficulty: recipe.difficulty || 'medium',
         calories: recipe.nutrition?.calories || recipe.calories || null,
+        protein: recipe.nutrition?.protein || recipe.protein || null,
+        carbohydrates: recipe.nutrition?.carbohydrates || recipe.carbohydrates || null,
+        fats: recipe.nutrition?.fats || recipe.fats || null,
         ingredients: Array.isArray(recipe.ingredients) ? recipe.ingredients : [],
         steps: Array.isArray(recipe.steps) ? recipe.steps : [],
         cookingMethods: recipe.cookingMethods || null,

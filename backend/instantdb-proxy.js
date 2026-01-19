@@ -7,45 +7,14 @@
  * This can be deployed as a serverless function (Vercel, Netlify, etc.) or Express server.
  */
 
-import { init, i, id } from '@instantdb/react';
-import rules from '../rules.js';
+import { init, id } from '@instantdb/admin';
 
 const APP_ID = '588227b6-6022-44a9-88f3-b1c2e2cce304';
-
-const schema = i.schema({
-  entities: {
-    users: i.entity({
-      email: i.string().indexed(),
-      passwordHash: i.string().optional(),
-      passwordSalt: i.string().optional(),
-      name: i.string().optional(),
-      createdAt: i.number().indexed(),
-      googleId: i.string().optional().indexed(),
-      photoUrl: i.string().optional(),
-    }),
-    recipes: i.entity({
-      recipeId: i.string().indexed(),
-      userId: i.string().indexed(),
-      dishName: i.string().indexed(),
-      shortDescription: i.string(),
-      imageUrl: i.string(),
-      prepTimeMinutes: i.number().indexed(),
-      difficulty: i.string().indexed(),
-      calories: i.number().optional(),
-      ingredients: i.json(),
-      steps: i.json(),
-      cookingMethods: i.json().optional(),
-      calorieAccuracyNote: i.string().optional(),
-      sourceConfidence: i.string(),
-      createdAt: i.number().indexed(),
-    }),
-  },
-});
+const ADMIN_TOKEN = process.env.INSTANTDB_ADMIN_TOKEN || '8dce07c0-bfa7-49b3-b158-dc9b08294aca';
 
 const db = init({
   appId: APP_ID,
-  schema,
-  rules,
+  adminToken: ADMIN_TOKEN,
 });
 
 /**
@@ -53,26 +22,23 @@ const db = init({
  */
 export async function createUser(email, passwordHash, passwordSalt, name) {
   try {
-    const tx = db.tx;
     const userId = id();
+    const createdAt = Date.now();
     
     const transaction = [
-      tx.users[userId].update({
+      db.tx.users[userId].update({
         id: userId,
         email: email.toLowerCase().trim(),
         passwordHash,
         passwordSalt,
-        name: name?.trim(),
-        createdAt: Date.now(),
+        name: name?.trim() || null,
+        createdAt,
       }),
     ];
     
-    db.transact(transaction);
+    await db.transact(transaction);
     
-    // Wait for transaction to complete
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    return { id: userId, email, name, createdAt: Date.now() };
+    return { id: userId, email: email.toLowerCase().trim(), name: name?.trim() || null, createdAt };
   } catch (error) {
     console.error('Error creating user:', error);
     throw error;
@@ -85,7 +51,7 @@ export async function createUser(email, passwordHash, passwordSalt, name) {
 export async function findUserByEmail(email) {
   try {
     // Use InstantDB query
-    const { data } = await db.query({
+    const data = await db.query({
       users: {
         $: {
           where: { email: email.toLowerCase().trim() },
@@ -105,7 +71,7 @@ export async function findUserByEmail(email) {
  */
 export async function findUserByGoogleId(googleId) {
   try {
-    const { data } = await db.query({
+    const data = await db.query({
       users: {
         $: {
           where: { googleId },
@@ -125,23 +91,22 @@ export async function findUserByGoogleId(googleId) {
  */
 export async function saveRecipe(recipeData, userId) {
   try {
-    const tx = db.tx;
     const recipeId = id();
+    const createdAt = Date.now();
     
     const transaction = [
-      tx.recipes[recipeId].update({
+      db.tx.recipes[recipeId].update({
         id: recipeId,
         recipeId,
         userId,
         ...recipeData,
-        createdAt: Date.now(),
+        createdAt,
       }),
     ];
     
-    db.transact(transaction);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await db.transact(transaction);
     
-    return { id: recipeId, ...recipeData };
+    return { id: recipeId, ...recipeData, createdAt };
   } catch (error) {
     console.error('Error saving recipe:', error);
     throw error;
@@ -158,15 +123,13 @@ export async function createOrUpdateGoogleUser(email, googleId, name, photoUrl) 
     
     if (user) {
       // User exists, update if needed
-      const tx = db.tx;
       const transaction = [
-        tx.users[user.id].update({
+        ['update', '$users', user.id, {
           name: name || user.name,
           photoUrl: photoUrl || user.photoUrl,
-        }),
+        }],
       ];
-      db.transact(transaction);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await db.transact(transaction);
       return { ...user, name: name || user.name, photoUrl: photoUrl || user.photoUrl };
     }
     
@@ -175,39 +138,35 @@ export async function createOrUpdateGoogleUser(email, googleId, name, photoUrl) 
     
     if (user) {
       // Update existing user with Google ID
-      const tx = db.tx;
       const transaction = [
-        tx.users[user.id].update({
+        ['update', '$users', user.id, {
           googleId,
           name: name || user.name,
           photoUrl: photoUrl || user.photoUrl,
-        }),
+        }],
       ];
-      db.transact(transaction);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await db.transact(transaction);
       return { ...user, googleId, name: name || user.name, photoUrl: photoUrl || user.photoUrl };
     }
     
     // Create new user
-    const tx = db.tx;
     const userId = id();
     const createdAt = Date.now();
     
     const transaction = [
-      tx.users[userId].update({
+      ['update', '$users', userId, {
         id: userId,
         email: email.toLowerCase().trim(),
         googleId,
-        name: name?.trim(),
-        photoUrl,
+        name: name?.trim() || null,
+        photoUrl: photoUrl || null,
         createdAt,
-      }),
+      }],
     ];
     
-    db.transact(transaction);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await db.transact(transaction);
     
-    return { id: userId, email: email.toLowerCase().trim(), googleId, name, photoUrl, createdAt };
+    return { id: userId, email: email.toLowerCase().trim(), googleId, name: name?.trim() || null, photoUrl: photoUrl || null, createdAt };
   } catch (error) {
     console.error('Error creating/updating Google user:', error);
     throw error;
@@ -219,16 +178,14 @@ export async function createOrUpdateGoogleUser(email, googleId, name, photoUrl) 
  */
 export async function updateUser(userId, updates) {
   try {
-    const tx = db.tx;
     const transaction = [
-      tx.users[userId].update(updates),
+      db.tx.users[userId].update(updates),
     ];
     
-    db.transact(transaction);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await db.transact(transaction);
     
     // Fetch updated user
-    const { data } = await db.query({
+    const data = await db.query({
       users: {
         $: {
           where: { id: userId },
@@ -248,7 +205,7 @@ export async function updateUser(userId, updates) {
  */
 export async function getUserRecipes(userId) {
   try {
-    const { data } = await db.query({
+    const data = await db.query({
       recipes: {
         $: {
           where: { userId },

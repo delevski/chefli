@@ -41,5 +41,9 @@ class InstantDBConfig {
   static const String saveRecipeEndpoint = '/api/recipes/save';
   static const String getRecipesEndpoint = '/api/recipes/get';
   static const String deleteRecipeEndpoint = '/api/recipes/delete';
+  
+  // LangChain Agent Configuration
+  // LangChain agent endpoint for recipe generation
+  static const String langChainUrl = 'https://ordi1985.pythonanywhere.com/generate-recipe';
 }
 

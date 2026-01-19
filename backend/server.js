@@ -37,6 +37,56 @@ app.get('/health', (req, res) => {
 // Setup InstantDB proxy routes
 setupExpressRoutes(app);
 
+// LangChain Agent Proxy endpoint - Forward recipe generation requests to LangChain agent
+app.post('/api/recipes/generate', async (req, res) => {
+  try {
+    const langChainUrl = process.env.LANGCHAIN_URL || 'https://ordi1985.pythonanywhere.com/generate-recipe';
+    
+    // Support both request formats: "menu" (comma-separated string) or "ingredients" (array)
+    let requestBody;
+    if (req.body.menu) {
+      // Already in LangChain format
+      requestBody = { menu: req.body.menu };
+    } else if (req.body.ingredients) {
+      // Convert array to comma-separated string
+      const ingredientsList = Array.isArray(req.body.ingredients)
+        ? req.body.ingredients
+        : req.body.ingredients.split(',').map(ing => ing.trim()).filter(ing => ing.length > 0);
+      requestBody = { menu: ingredientsList.join(',') };
+    } else {
+      return res.status(400).json({ 
+        error: 'Invalid request format',
+        message: 'Request must include either "menu" (comma-separated string) or "ingredients" (array)'
+      });
+    }
+
+    console.log(`Forwarding recipe generation request to LangChain agent: ${langChainUrl}`);
+
+    // Forward request to LangChain agent
+    const response = await fetch(langChainUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`LangChain agent error: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error('LangChain Proxy Error:', error);
+    res.status(500).json({ 
+      error: 'Failed to generate recipe',
+      details: error.message 
+    });
+  }
+});
+
 // OCR endpoint - Extract text from images using Tesseract.js (FREE)
 app.post('/api/ocr/extract-text', upload.single('image'), async (req, res) => {
   try {
@@ -202,6 +252,7 @@ app.listen(PORT, () => {
   console.log(`  PUT  /api/users/update/:userId`);
   console.log(`  POST /api/recipes/save`);
   console.log(`  POST /api/recipes/get`);
+  console.log(`  POST /api/recipes/generate (LangChain Agent Proxy)`);
   console.log(`  POST /api/ocr/extract-text (FREE - Tesseract.js)`);
   console.log(`  POST /api/speech/transcribe (FREE tier - AssemblyAI)`);
 });

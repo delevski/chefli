@@ -5,55 +5,81 @@ import 'package:provider/provider.dart';
 import '../../core/widgets/glass_panel.dart';
 import '../../core/widgets/bottom_nav_bar.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/theme_extensions.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../providers/recipe_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/mock_recipe.dart';
 
-class SavedRecipesScreen extends StatelessWidget {
+class SavedRecipesScreen extends StatefulWidget {
   const SavedRecipesScreen({super.key});
+
+  @override
+  State<SavedRecipesScreen> createState() => _SavedRecipesScreenState();
+}
+
+class _SavedRecipesScreenState extends State<SavedRecipesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Refresh recipes when screen is opened
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<RecipeProvider>().refreshRecipes();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      backgroundColor: ChefliTheme.bgMain,
+      backgroundColor: context.bgMain,
       body: Stack(
         children: [
           // Background Glows
-          Positioned(
-            top: -100,
-            right: -100,
-            child: Container(
-              width: 400,
-              height: 400,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    ChefliTheme.primary.withOpacity(0.15),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -50,
-            left: -100,
-            child: Container(
-              width: 500,
-              height: 500,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    ChefliTheme.accent.withOpacity(0.1),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
+          Builder(
+            builder: (context) {
+              final isDark = Theme.of(context).brightness == Brightness.dark;
+              final primaryGlowOpacity = isDark ? 0.15 : 0.08;
+              final accentGlowOpacity = isDark ? 0.1 : 0.05;
+              return Stack(
+                children: [
+                  Positioned(
+                    top: -100,
+                    right: -100,
+                    child: Container(
+                      width: 400,
+                      height: 400,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            ChefliTheme.primary.withOpacity(primaryGlowOpacity),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: -50,
+                    left: -100,
+                    child: Container(
+                      width: 500,
+                      height: 500,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            ChefliTheme.accent.withOpacity(accentGlowOpacity),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
 
           CustomScrollView(
@@ -67,21 +93,21 @@ class SavedRecipesScreen extends StatelessWidget {
                     child: Row(
                       children: [
                         IconButton(
-                          icon: const Icon(LucideIcons.chevronLeft, color: Colors.white, size: 24),
+                          icon: Icon(LucideIcons.chevronLeft, color: context.onSurface, size: 24),
                           onPressed: () => context.pop(),
                         ),
                         Expanded(
                           child: Text(
                             l10n.savedRecipes,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: context.onSurface,
                             ),
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(LucideIcons.search, color: Colors.white, size: 22),
+                          icon: Icon(LucideIcons.search, color: context.onSurface, size: 22),
                           onPressed: () {},
                         ),
                         const SizedBox(width: 4),
@@ -91,7 +117,7 @@ class SavedRecipesScreen extends StatelessWidget {
                               width: 36,
                               height: 36,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
+                                color: context.surfaceOverlay,
                                 shape: BoxShape.circle,
                               ),
                               child: IconButton(
@@ -104,7 +130,7 @@ class SavedRecipesScreen extends StatelessWidget {
                                 },
                                 icon: Icon(
                                   auth.isLoggedIn ? LucideIcons.user : LucideIcons.logIn,
-                                  color: Colors.white,
+                                  color: context.onSurface,
                                   size: 18,
                                 ),
                                 padding: EdgeInsets.zero,
@@ -135,14 +161,14 @@ class SavedRecipesScreen extends StatelessWidget {
                               Icon(
                                 LucideIcons.bookmark,
                                 size: 64,
-                                color: Colors.white.withOpacity(0.3),
+                                color: context.onSurface.withOpacity(0.3),
                               ),
                               const SizedBox(height: 16),
                               Text(
                                 l10n.noSavedRecipesYet,
                                 style: TextStyle(
                                   fontSize: 18,
-                                  color: Colors.white.withOpacity(0.5),
+                                  color: context.onSurfaceSecondary,
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -150,7 +176,7 @@ class SavedRecipesScreen extends StatelessWidget {
                                 l10n.saveRecipesToSeeHere,
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.white.withOpacity(0.3),
+                                  color: context.onSurface.withOpacity(0.3),
                                 ),
                               ),
                             ],
@@ -202,26 +228,58 @@ class _RecipeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final hasImage = recipe.imageUrl != null && recipe.imageUrl!.isNotEmpty;
+    final imageUrl = hasImage 
+        ? recipe.imageUrl! 
+        : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400';
+    
     return GestureDetector(
       onTap: () => context.push('/recipe/${recipe.id}'),
       child: Container(
         decoration: BoxDecoration(
-          color: ChefliTheme.bgSurface,
+          color: context.bgSurface,
           borderRadius: BorderRadius.circular(16),
-          image: recipe.imageUrl != null
-              ? DecorationImage(
-                  image: NetworkImage(recipe.imageUrl!),
-                  fit: BoxFit.cover,
-                  colorFilter: ColorFilter.mode(
-                    Colors.black.withOpacity(0.3),
-                    BlendMode.darken,
-                  ),
-                )
-              : null,
         ),
-        child: Stack(
-          children: [
-            if (recipe.imageUrl != null)
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            children: [
+              // Background Image
+              Positioned.fill(
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    // Fallback placeholder if image fails to load
+                    return Container(
+                      color: context.bgSurface,
+                      child: Center(
+                        child: Icon(
+                          LucideIcons.image,
+                          size: 48,
+                          color: context.onSurface.withOpacity(0.3),
+                        ),
+                      ),
+                    );
+                  },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      color: context.bgSurface,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                          color: ChefliTheme.primary,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              // Dark overlay
               Positioned.fill(
                 child: Container(
                   decoration: const BoxDecoration(
@@ -231,6 +289,13 @@ class _RecipeCard extends StatelessWidget {
                       colors: [Colors.transparent, Colors.black87],
                       stops: [0.6, 1.0],
                     ),
+                  ),
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                      Colors.black.withOpacity(0.3),
+                      BlendMode.darken,
+                    ),
+                    child: Container(color: Colors.transparent),
                   ),
                 ),
               ),
@@ -293,6 +358,7 @@ class _RecipeCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

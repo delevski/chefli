@@ -42,7 +42,7 @@ class InstantDBService {
         'userId': userId,
         'dishName': recipe.name,
         'shortDescription': recipe.description ?? '',
-        'imageUrl': recipe.imageUrl ?? '',
+        'imageUrl': recipe.imageUrl ?? '', // Save empty string if null, but prefer actual imageUrl
         'prepTimeMinutes': recipe.time,
         'difficulty': recipe.difficulty,
         'calories': recipe.calories,

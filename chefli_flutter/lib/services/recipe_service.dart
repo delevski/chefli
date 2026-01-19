@@ -1,55 +1,89 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/mock_recipe.dart';
+import '../config/instantdb_config.dart';
 import 'instantdb_service.dart';
 
 class RecipeService {
-  static const String webhookUrl = 'https://hook.eu1.make.com/qvf4cgumvfdrsgo7yq61ddhtbzu5mxon';
   final InstantDBService _instantDB = InstantDBService();
+
+  /// Transform LangChain agent response to Recipe model format
+  Map<String, dynamic> transformLangChainResponse(Map<String, dynamic> langChainData) {
+    final recipeData = langChainData['recipe'] as Map<String, dynamic>? ?? {};
+    // Extract image_url from LangChain response - this is the actual generated image
+    final imageUrl = langChainData['image_url'] as String?;
+    final nutrition = langChainData['nutrition'] as Map<String, dynamic>? ?? {};
+    
+    // Extract time from instructions or use default
+    final instructions = recipeData['instructions'] as List<dynamic>? ?? [];
+    int estimatedTime = 30; // Default 30 minutes
+    for (var instruction in instructions) {
+      final instructionText = instruction.toString().toLowerCase();
+      // Try to extract time mentions like "15 minutes", "cook for 20 min"
+      final timeMatch = RegExp(r'(\d+)\s*(?:min|minute|minutes|דקות|דקה)').firstMatch(instructionText);
+      if (timeMatch != null) {
+        final extractedTime = int.tryParse(timeMatch.group(1) ?? '');
+        if (extractedTime != null && extractedTime > estimatedTime) {
+          estimatedTime = extractedTime;
+        }
+      }
+    }
+    
+    // Default difficulty to medium
+    String difficulty = 'medium';
+    
+    return {
+      'dishName': recipeData['dish_name'] ?? 'Generated Recipe',
+      'name': recipeData['dish_name'] ?? 'Generated Recipe',
+      'shortDescription': '',
+      'description': '',
+      // Use LangChain image_url if available, otherwise null (let UI handle fallback)
+      'imageUrl': (imageUrl != null && imageUrl.isNotEmpty) ? imageUrl : null,
+      'estimatedPreparationTime': '$estimatedTime minutes',
+      'time': estimatedTime,
+      'prepTimeMinutes': estimatedTime,
+      'difficultyLevel': difficulty,
+      'difficulty': difficulty,
+      'ingredientsUsed': recipeData['ingredients'] as List<dynamic>? ?? [],
+      'ingredients': recipeData['ingredients'] as List<dynamic>? ?? [],
+      'preparationSteps': instructions.map((e) => e.toString()).toList(),
+      'steps': instructions.map((e) => e.toString()).toList(),
+      'estimatedCaloricValue': nutrition['calories']?.toDouble()?.round(),
+      'calories': nutrition['calories']?.toDouble()?.round(),
+      'protein': nutrition['protein']?.toDouble(),
+      'carbohydrates': nutrition['carbohydrates']?.toDouble(),
+      'fats': nutrition['fats']?.toDouble(), // If not provided, can be calculated
+      'cookingMethods': [],
+      'calorieAccuracyNote': null,
+    };
+  }
 
   Future<Recipe> generateRecipe(List<String> ingredients) async {
     try {
-      // Call Make.com webhook
+      // Support both array and comma-separated string formats
+      // Convert array to comma-separated string for LangChain agent
+      final menuString = ingredients.join(',');
+      
+      // Call LangChain agent endpoint
       final response = await http.post(
-        Uri.parse(webhookUrl),
+        Uri.parse(InstantDBConfig.langChainUrl),
         headers: {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'ingredients': ingredients,
+          'menu': menuString,
         }),
       );
 
       if (response.statusCode == 200) {
         // Explicitly decode as UTF-8 to handle Hebrew and other non-ASCII characters
         final responseBody = utf8.decode(response.bodyBytes);
-        final decodedData = jsonDecode(responseBody);
+        final decodedData = jsonDecode(responseBody) as Map<String, dynamic>;
         
-        // Handle different response formats
-        Map<String, dynamic> jsonData;
+        // Transform LangChain response to Recipe model format
+        final transformedData = transformLangChainResponse(decodedData);
         
-        if (decodedData is Map<String, dynamic>) {
-          // Check if response has "alternatives" array
-          if (decodedData.containsKey('alternatives') && decodedData['alternatives'] is List) {
-            final alternatives = decodedData['alternatives'] as List;
-            if (alternatives.isNotEmpty) {
-              // Take the first recipe from the alternatives array
-              jsonData = alternatives[0] as Map<String, dynamic>;
-            } else {
-              throw Exception('No recipes found in alternatives array');
-            }
-          } else {
-            // Single recipe object (direct Map)
-            jsonData = decodedData;
-          }
-        } else if (decodedData is List && decodedData.isNotEmpty) {
-          // Direct array of recipes - take the first one
-          jsonData = decodedData[0] as Map<String, dynamic>;
-        } else {
-          throw Exception('Invalid response format from recipe service');
-        }
-        
-        final recipe = Recipe.fromJson(jsonData);
+        final recipe = Recipe.fromJson(transformedData);
 
         // Save to InstantDB
         try {

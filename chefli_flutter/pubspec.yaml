@@ -52,8 +52,19 @@ dependencies:
   # Local storage
   shared_preferences: ^2.2.2
   
+  # Share functionality
+  share_plus: ^10.1.2
+  
   # Crypto for password hashing
   crypto: ^3.0.5
+  
+  # Cooking mode features
+  flutter_tts: ^4.0.2
+  speech_to_text: ^7.0.0
+  audioplayers: ^6.0.0
+  
+  # UUID generation for InstantDB entity IDs
+  uuid: ^4.5.1
   
   # Firebase & Auth (keeping for Google Sign In OAuth flow)
   firebase_core: ^3.12.1

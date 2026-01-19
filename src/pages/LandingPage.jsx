@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { Upload, Mic, Video, Image as ImageIcon } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useRecipe } from '../context/RecipeContext';
+import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import LoginPage from './LoginPage';
+import ProcessingPage from './ProcessingPage';
 import '../styles/LandingPage.css';
 
 const TEMPLATES = [
@@ -14,24 +18,47 @@ const TEMPLATES = [
 
 const LandingPage = () => {
     const [inputText, setInputText] = useState('');
+    const [showLogin, setShowLogin] = useState(false);
+    const [showProcessing, setShowProcessing] = useState(false);
     const navigate = useNavigate();
     const { createRecipe, isLoading, error } = useRecipe();
+    const { isLoggedIn } = useAuth();
+    const { t, isRTL } = useLanguage();
 
     const handleCook = async () => {
         if (!inputText.trim()) {
-            alert('Please enter at least one ingredient');
+            alert(t('pleaseEnterAtLeastOneIngredient'));
             return;
         }
+
+        // Check if user is logged in
+        if (!isLoggedIn) {
+            setShowLogin(true);
+            return;
+        }
+
+        // Show processing screen
+        setShowProcessing(true);
 
         try {
             const recipe = await createRecipe(inputText);
             if (recipe) {
-                navigate(`/recipe/${recipe.recipeId}`);
+                // Small delay to ensure processing screen shows completion
+                setTimeout(() => {
+                    setShowProcessing(false);
+                    navigate(`/recipe/${recipe.recipeId}`);
+                }, 500);
             }
         } catch (err) {
-            // Error is already set in context, show alert
+            setShowProcessing(false);
             alert(`Error: ${err.message || 'Failed to generate recipe'}`);
         }
+    };
+
+    const handleLoginSuccess = () => {
+        setShowLogin(false);
+        // Retry recipe generation after login
+        handleCook();
     };
 
     const handleTemplateClick = (text) => {
@@ -39,66 +66,83 @@ const LandingPage = () => {
     };
 
     return (
-        <div className="landing-container">
-            <div className="content-wrapper glass-panel">
-                <motion.h1
-                    className="hero-title text-gradient"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                >
-                    What ingredients do you have to cook?
-                </motion.h1>
+        <>
+            <div className="landing-container">
+                <div className="content-wrapper glass-panel">
+                    <motion.h1
+                        className="hero-title text-gradient"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                        dir={isRTL ? 'rtl' : 'ltr'}
+                    >
+                        {t('whatAreWeCooking')}
+                    </motion.h1>
 
-                <div className="input-section">
-                    <textarea
-                        className="main-input"
-                        placeholder="e.g., 2 eggs, some tomatoes, and pasta..."
-                        value={inputText}
-                        onChange={(e) => setInputText(e.target.value)}
-                    />
+                    <div className="input-section">
+                        <textarea
+                            className="main-input"
+                            placeholder={t('ingredientPlaceholder')}
+                            value={inputText}
+                            onChange={(e) => setInputText(e.target.value)}
+                            dir={isRTL ? 'rtl' : 'ltr'}
+                        />
 
-                    <div className="media-controls">
-                        <MediaButton icon={<ImageIcon size={20} />} label="Photo" />
-                        <MediaButton icon={<Upload size={20} />} label="Upload" />
-                        <MediaButton icon={<Mic size={20} />} label="Audio" />
-                        <MediaButton icon={<Video size={20} />} label="Video" />
+                        <div className="media-controls">
+                            <MediaButton icon={<ImageIcon size={20} />} label="Photo" />
+                            <MediaButton icon={<Upload size={20} />} label="Upload" />
+                            <MediaButton icon={<Mic size={20} />} label="Audio" />
+                            <MediaButton icon={<Video size={20} />} label="Video" />
+                        </div>
                     </div>
-                </div>
 
-                <div className="templates-section">
-                    {TEMPLATES.map((template, idx) => (
-                        <motion.button
-                            key={idx}
-                            className="template-chip glass-panel"
-                            onClick={() => handleTemplateClick(template.text)}
-                            whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.15)' }}
-                            whileTap={{ scale: 0.95 }}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 * idx }}
-                        >
-                            {template.label}
-                        </motion.button>
-                    ))}
-                </div>
-
-                <motion.button
-                    className="cook-button"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleCook}
-                    disabled={isLoading}
-                >
-                    {isLoading ? 'Chefing...' : 'Chef It Up!'}
-                </motion.button>
-                {error && (
-                    <div style={{ color: '#ff4444', marginTop: '1rem', fontSize: '0.9rem' }}>
-                        {error}
+                    <div className="templates-section">
+                        {TEMPLATES.map((template, idx) => (
+                            <motion.button
+                                key={idx}
+                                className="template-chip glass-panel"
+                                onClick={() => handleTemplateClick(template.text)}
+                                whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.15)' }}
+                                whileTap={{ scale: 0.95 }}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 * idx }}
+                            >
+                                {template.label}
+                            </motion.button>
+                        ))}
                     </div>
-                )}
+
+                    <motion.button
+                        className="cook-button"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={handleCook}
+                        disabled={isLoading || showProcessing}
+                    >
+                        {isLoading || showProcessing ? t('cooking') : t('cook')}
+                    </motion.button>
+                    {error && (
+                        <div style={{ color: '#ff4444', marginTop: '1rem', fontSize: '0.9rem' }}>
+                            {error}
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+            <AnimatePresence>
+                {showLogin && (
+                    <LoginPage
+                        onLoginSuccess={handleLoginSuccess}
+                        onClose={() => setShowLogin(false)}
+                    />
+                )}
+                {showProcessing && (
+                    <ProcessingPage
+                        onComplete={() => setShowProcessing(false)}
+                    />
+                )}
+            </AnimatePresence>
+        </>
     );
 };
 

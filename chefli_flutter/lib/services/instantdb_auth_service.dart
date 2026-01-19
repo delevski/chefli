@@ -3,6 +3,7 @@ import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:uuid/uuid.dart';
 import '../models/user.dart';
 import '../config/instantdb_config.dart';
 
@@ -12,6 +13,7 @@ class InstantDBAuthService {
   static const String _authTokenKey = 'instantdb_auth_token';
   static const String _userKey = 'instantdb_user';
   static const String _saltKey = 'instantdb_salt';
+  static const _uuid = Uuid();
   
   // Get the API base URL (backend proxy or direct InstantDB)
   String get _apiBaseUrl {
@@ -184,7 +186,8 @@ class InstantDBAuthService {
       final passwordHash = _hashPassword(password, salt);
 
       // Create user data with salt stored in InstantDB
-      final userId = DateTime.now().millisecondsSinceEpoch.toString();
+      // Use UUID for InstantDB entity ID (required by InstantDB)
+      final userId = _uuid.v4();
       final userData = {
         'id': userId,
         'email': email.toLowerCase().trim(),
@@ -572,7 +575,8 @@ class InstantDBAuthService {
           } else {
             // Create new user
             print('📤 Creating new user');
-            final userId = DateTime.now().millisecondsSinceEpoch.toString();
+            // Use UUID for InstantDB entity ID (required by InstantDB)
+            final userId = _uuid.v4();
             final newUserData = {
               'id': userId,
               'email': email.toLowerCase().trim(),

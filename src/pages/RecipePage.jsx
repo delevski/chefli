@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Clock, TrendingUp, ChevronLeft, CheckCircle, Info, Flame } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRecipe } from '../context/RecipeContext';
+import { useLanguage } from '../context/LanguageContext';
 import '../styles/RecipePage.css';
 
 // Fallback Mock Data
@@ -46,6 +47,7 @@ const RecipePage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { getRecipe, currentRecipe } = useRecipe();
+    const { t, isRTL, getDifficultyText } = useLanguage();
     const [recipe, setRecipe] = useState(null);
 
     useEffect(() => {
@@ -86,10 +88,10 @@ const RecipePage = () => {
                         </motion.p>
                     )}
                     <div className="meta-badges">
-                        <span className="badge glass-panel"><Clock size={16} /> {recipe.prepTimeMinutes} min</span>
-                        <span className="badge glass-panel"><TrendingUp size={16} /> {recipe.difficulty.charAt(0).toUpperCase() + recipe.difficulty.slice(1)}</span>
+                        <span className="badge glass-panel"><Clock size={16} /> {recipe.prepTimeMinutes} {t('minutes')}</span>
+                        <span className="badge glass-panel"><TrendingUp size={16} /> {getDifficultyText(recipe.difficulty)}</span>
                         {recipe.nutrition && recipe.nutrition.calories && (
-                            <span className="badge glass-panel"><Flame size={16} /> {recipe.nutrition.calories} kcal</span>
+                            <span className="badge glass-panel"><Flame size={16} /> {recipe.nutrition.calories} {t('kcal')}</span>
                         )}
                     </div>
                 </div>
@@ -117,11 +119,34 @@ const RecipePage = () => {
 
                         {recipe.nutrition && (
                             <div className="nutrition-box">
-                                <h3>Nutrition per serving</h3>
-                                <div className="macros">
-                                    <div className="macro"><div>Protien</div><div>{recipe.nutrition.protein_g}g</div></div>
-                                    <div className="macro"><div>Carbs</div><div>{recipe.nutrition.carbs_g}g</div></div>
-                                    <div className="macro"><div>Fat</div><div>{recipe.nutrition.fat_g}g</div></div>
+                                <h3>{t('nutritionFacts')}</h3>
+                                <div className="nutrition-grid">
+                                    <div className="nutrition-card primary">
+                                        <div className="nutrition-label">{t('protein')}</div>
+                                        <div className="nutrition-value">
+                                            {recipe.nutrition.protein ? `${Math.round(recipe.nutrition.protein)}g` : '-'}
+                                        </div>
+                                    </div>
+                                    <div className="nutrition-card">
+                                        <div className="nutrition-label">{t('carbs')}</div>
+                                        <div className="nutrition-value">
+                                            {recipe.nutrition.carbohydrates ? `${Math.round(recipe.nutrition.carbohydrates)}g` : '-'}
+                                        </div>
+                                    </div>
+                                    <div className="nutrition-card">
+                                        <div className="nutrition-label">{t('fats')}</div>
+                                        <div className="nutrition-value">
+                                            {recipe.nutrition.fats ? `${Math.round(recipe.nutrition.fats)}g` : '-'}
+                                        </div>
+                                    </div>
+                                    <div className="nutrition-card">
+                                        <div className="nutrition-label">{t('fiber')}</div>
+                                        <div className="nutrition-value">
+                                            {recipe.nutrition.carbohydrates && recipe.nutrition.carbohydrates > 0
+                                                ? `${Math.round(recipe.nutrition.carbohydrates * 0.1)}g`
+                                                : '-'}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -134,7 +159,7 @@ const RecipePage = () => {
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: 0.3 }}
                     >
-                        <h2>Preparation Steps</h2>
+                        <h2 dir={isRTL ? 'rtl' : 'ltr'}>{t('instructions')}</h2>
                         <div className="steps-list">
                             {recipe.steps.map((step, idx) => (
                                 <div key={idx} className="step-card glass-panel">

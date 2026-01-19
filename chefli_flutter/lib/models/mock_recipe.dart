@@ -6,6 +6,9 @@ class Recipe {
   final int time;
   final String difficulty;
   final int? calories;
+  final double? protein; // in grams
+  final double? carbohydrates; // in grams
+  final double? fats; // in grams (can be calculated or from API)
   final List<Ingredient> ingredients;
   final List<String> steps;
   final List<String>? cookingMethods;
@@ -19,6 +22,9 @@ class Recipe {
     required this.time,
     required this.difficulty,
     this.calories,
+    this.protein,
+    this.carbohydrates,
+    this.fats,
     required this.ingredients,
     required this.steps,
     this.cookingMethods,
@@ -54,10 +60,20 @@ class Recipe {
       id: id ?? DateTime.now().millisecondsSinceEpoch.toString(),
       name: json['dishName'] ?? json['name'] ?? 'Generated Recipe',
       description: json['shortDescription'] ?? json['description'] ?? '',
-      imageUrl: json['imageUrl'] ?? 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400',
+      // Use imageUrl from JSON if available, otherwise null (UI will handle fallback)
+      // Handle both null and empty string cases
+      imageUrl: () {
+        final url = json['imageUrl'];
+        if (url == null) return null;
+        final urlStr = url.toString().trim();
+        return urlStr.isNotEmpty ? urlStr : null;
+      }(),
       time: parseTime(json['estimatedPreparationTime'] ?? json['time']?.toString()),
       difficulty: (json['difficultyLevel'] ?? json['difficulty'] ?? 'medium').toString().toLowerCase(),
       calories: parseCalories(json['estimatedCaloricValue'] ?? json['calories']),
+      protein: json['protein']?.toDouble(),
+      carbohydrates: json['carbohydrates']?.toDouble(),
+      fats: json['fats']?.toDouble(),
       ingredients: (json['ingredientsUsed'] ?? json['ingredients'] ?? []).map<Ingredient>((ing) {
         if (ing is Map) {
           return Ingredient(ing['name'] ?? '', ing['quantity'] ?? 'unknown');
@@ -89,6 +105,9 @@ class Recipe {
       'difficulty': difficulty, // Include both for compatibility
       'estimatedCaloricValue': calories,
       'calories': calories, // Include both for compatibility
+      'protein': protein,
+      'carbohydrates': carbohydrates,
+      'fats': fats,
       'ingredientsUsed': ingredients.map((ing) => {
         'name': ing.name,
         'quantity': ing.quantity,
@@ -121,6 +140,9 @@ final mockRecipe = Recipe(
   time: 25,
   difficulty: "Medium",
   calories: 650,
+  protein: 28.0,
+  carbohydrates: 12.0,
+  fats: 18.0,
   ingredients: [
     Ingredient("Pasta", "400g"),
     Ingredient("Fresh Basil", "1 bunch"),

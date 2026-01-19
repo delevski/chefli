@@ -13,6 +13,7 @@ import 'package:path/path.dart' as p;
 import '../../core/widgets/glass_panel.dart';
 import '../../core/widgets/bottom_nav_bar.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/theme_extensions.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../services/recipe_service.dart';
 import '../../services/media_processing_service.dart';
@@ -92,19 +93,19 @@ class _LandingScreenState extends State<LandingScreen> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: ChefliTheme.bgSurface,
+      backgroundColor: context.bgSurface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => SafeArea(
+      builder: (sheetContext) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
               leading: Icon(LucideIcons.camera, color: ChefliTheme.primary),
-              title: Text(l10n.takePhoto, style: const TextStyle(color: Colors.white)),
+              title: Text(l10n.takePhoto, style: TextStyle(color: sheetContext.onSurface)),
               onTap: () async {
-                Navigator.pop(context);
+                Navigator.pop(sheetContext);
                 final image = await _imagePicker.pickImage(
                   source: ImageSource.camera,
                   imageQuality: 80,
@@ -116,9 +117,9 @@ class _LandingScreenState extends State<LandingScreen> {
             ),
             ListTile(
               leading: Icon(LucideIcons.image, color: ChefliTheme.primary),
-              title: Text(l10n.chooseFromGallery, style: const TextStyle(color: Colors.white)),
+              title: Text(l10n.chooseFromGallery, style: TextStyle(color: sheetContext.onSurface)),
               onTap: () async {
-                Navigator.pop(context);
+                Navigator.pop(sheetContext);
                 final images = await _imagePicker.pickMultiImage(imageQuality: 80);
                 if (images.isNotEmpty) {
                   for (final img in images) {
@@ -343,19 +344,19 @@ class _LandingScreenState extends State<LandingScreen> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: ChefliTheme.bgSurface,
+      backgroundColor: context.bgSurface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => SafeArea(
+      builder: (sheetContext) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
               leading: Icon(LucideIcons.video, color: ChefliTheme.primary),
-              title: Text(l10n.recordVideo, style: const TextStyle(color: Colors.white)),
+              title: Text(l10n.recordVideo, style: TextStyle(color: sheetContext.onSurface)),
               onTap: () async {
-                Navigator.pop(context);
+                Navigator.pop(sheetContext);
                 final video = await _imagePicker.pickVideo(
                   source: ImageSource.camera,
                   maxDuration: const Duration(minutes: 2),
@@ -373,9 +374,9 @@ class _LandingScreenState extends State<LandingScreen> {
             ),
             ListTile(
               leading: Icon(LucideIcons.film, color: ChefliTheme.primary),
-              title: Text(l10n.chooseFromGallery, style: const TextStyle(color: Colors.white)),
+              title: Text(l10n.chooseFromGallery, style: TextStyle(color: sheetContext.onSurface)),
               onTap: () async {
-                Navigator.pop(context);
+                Navigator.pop(sheetContext);
                 final video = await _imagePicker.pickVideo(source: ImageSource.gallery);
                 if (video != null) {
                   setState(() {
@@ -519,8 +520,9 @@ class _LandingScreenState extends State<LandingScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
+      backgroundColor: context.bgMain,
       body: Container(
-        color: ChefliTheme.bgMain,
+        color: context.bgMain,
         child: Stack(
           children: [
             // Background Glows
@@ -595,30 +597,29 @@ class _LandingScreenState extends State<LandingScreen> {
                       const Spacer(),
                       Consumer<AuthProvider>(
                         builder: (context, auth, _) {
-                          return Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white.withOpacity(0.05),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.1),
+                          return GestureDetector(
+                            onTap: () {
+                              if (auth.isLoggedIn) {
+                                context.push('/profile');
+                              } else {
+                                context.push('/login');
+                              }
+                            },
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: context.surfaceOverlay,
+                                border: Border.all(
+                                  color: context.onSurface.withOpacity(0.1),
+                                ),
                               ),
-                            ),
-                            child: IconButton(
-                              onPressed: () {
-                                if (auth.isLoggedIn) {
-                                  context.push('/profile');
-                                } else {
-                                  context.push('/login');
-                                }
-                              },
-                              icon: Icon(
+                              child: Icon(
                                 auth.isLoggedIn ? LucideIcons.user : LucideIcons.logIn,
                                 color: ChefliTheme.primary,
                                 size: 20,
                               ),
-                              padding: EdgeInsets.zero,
                             ),
                           );
                         },
@@ -642,12 +643,12 @@ class _LandingScreenState extends State<LandingScreen> {
                         RichText(
                           textAlign: TextAlign.center,
                           text: TextSpan(
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 40,
                               fontWeight: FontWeight.w800,
                               height: 1.1,
                               letterSpacing: -1,
-                              color: Colors.white,
+                              color: context.onSurface,
                             ),
                             children: [
                               TextSpan(text: '${l10n.whatAreWeCooking}\n'),
@@ -666,7 +667,7 @@ class _LandingScreenState extends State<LandingScreen> {
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.white.withOpacity(0.5),
+                              color: context.onSurfaceSecondary,
                               height: 1.5,
                             ),
                           ),
@@ -689,14 +690,14 @@ class _LandingScreenState extends State<LandingScreen> {
                                 height: 40,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: Colors.white.withOpacity(0.05),
+                                  color: context.surfaceOverlay,
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(0.1),
+                                    color: context.onSurface.withOpacity(0.1),
                                   ),
                                 ),
                                 child: Icon(
                                   LucideIcons.sparkle,
-                                  color: Colors.white.withOpacity(0.4),
+                                  color: context.onSurfaceSecondary,
                                   size: 20,
                                 ),
                               ),
@@ -707,14 +708,14 @@ class _LandingScreenState extends State<LandingScreen> {
                                   focusNode: _focusNode,
                             maxLines: null,
                                   minLines: 3,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 18,
-                                    color: Colors.white,
+                                    color: context.onSurface,
                                   ),
                                   decoration: InputDecoration(
                                     hintText: l10n.ingredientPlaceholder,
                                     hintStyle: TextStyle(
-                                      color: Colors.white.withOpacity(0.3),
+                                      color: context.onSurface.withOpacity(0.3),
                                     ),
                               border: InputBorder.none,
                                     contentPadding: EdgeInsets.zero,
@@ -835,15 +836,15 @@ class _LandingScreenState extends State<LandingScreen> {
                       child: Row(
                           children: [
                           _SuggestionChip(l10n.quickSalad, onTap: () {
-                            _controller.text = 'lettuce, tomatoes, cucumber, olive oil';
+                            _controller.text = l10n.quickSaladIngredients;
                           }),
                           const SizedBox(width: 12),
                           _SuggestionChip(l10n.pastaNight, onTap: () {
-                            _controller.text = 'pasta, tomatoes, garlic, basil, parmesan';
+                            _controller.text = l10n.pastaNightIngredients;
                           }),
                           const SizedBox(width: 12),
                           _SuggestionChip(l10n.highProtein, onTap: () {
-                            _controller.text = 'chicken breast, eggs, spinach, quinoa';
+                            _controller.text = l10n.highProteinIngredients;
                           }),
                         ],
                       ),
@@ -893,7 +894,7 @@ class _MediaButton extends StatelessWidget {
               ? Colors.red.withOpacity(0.3)
               : isActive 
                   ? ChefliTheme.primary.withOpacity(0.2)
-                  : Colors.white.withOpacity(0.05),
+                  : context.surfaceOverlay,
           borderRadius: BorderRadius.circular(12),
           border: isActive || isRecording
               ? Border.all(color: isRecording ? Colors.red : ChefliTheme.primary, width: 1.5)
@@ -906,7 +907,7 @@ class _MediaButton extends StatelessWidget {
               ? Colors.red 
               : isActive 
                   ? ChefliTheme.primary 
-                  : Colors.white.withOpacity(0.7),
+                  : context.onSurface.withOpacity(0.7),
         ),
       ),
     );
@@ -973,15 +974,15 @@ class _SuggestionChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.03),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          color: context.surfaceOverlay,
+          border: Border.all(color: context.onSurface.withOpacity(0.1)),
           borderRadius: BorderRadius.circular(999),
         ),
         child: Text(
           label,
           style: TextStyle(
             fontSize: 14,
-            color: Colors.white.withOpacity(0.7),
+            color: context.onSurface.withOpacity(0.7),
           ),
         ),
       ),

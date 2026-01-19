@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../core/widgets/glass_panel.dart';
 import '../../core/widgets/bottom_nav_bar.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/theme_extensions.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 
@@ -16,43 +17,54 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      backgroundColor: ChefliTheme.bgMain,
+      backgroundColor: context.bgMain,
       body: Stack(
         children: [
           // Background Glows
-          Positioned(
-            top: -100,
-            right: -100,
-            child: Container(
-              width: 400,
-              height: 400,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    ChefliTheme.primary.withOpacity(0.15),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -50,
-            left: -100,
-            child: Container(
-              width: 500,
-              height: 500,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    ChefliTheme.accent.withOpacity(0.1),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
+          Builder(
+            builder: (context) {
+              final isDark = Theme.of(context).brightness == Brightness.dark;
+              final primaryGlowOpacity = isDark ? 0.15 : 0.08;
+              final accentGlowOpacity = isDark ? 0.1 : 0.05;
+              return Stack(
+                children: [
+                  Positioned(
+                    top: -100,
+                    right: -100,
+                    child: Container(
+                      width: 400,
+                      height: 400,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            ChefliTheme.primary.withOpacity(primaryGlowOpacity),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: -50,
+                    left: -100,
+                    child: Container(
+                      width: 500,
+                      height: 500,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            ChefliTheme.accent.withOpacity(accentGlowOpacity),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
 
           // Main content
@@ -83,14 +95,14 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 12),
-                            const Expanded(
+                            Expanded(
                               child: Text(
                                 'Chefli',
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
                                   fontStyle: FontStyle.italic,
-                                  color: Colors.white,
+                                  color: context.onSurface,
                                 ),
                               ),
                             ),
@@ -98,14 +110,16 @@ class HomeScreen extends StatelessWidget {
                               width: 40,
                               height: 40,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
+                                color: context.surfaceOverlay,
                                 shape: BoxShape.circle,
                               ),
                               child: IconButton(
-                                onPressed: () {},
-                                icon: const Icon(
+                                onPressed: () {
+                                  // TODO: Implement notifications
+                                },
+                                icon: Icon(
                                   LucideIcons.bell,
-                                  color: Colors.white,
+                                  color: context.onSurface,
                                   size: 20,
                                 ),
                                 padding: EdgeInsets.zero,
@@ -118,7 +132,7 @@ class HomeScreen extends StatelessWidget {
                                   width: 40,
                                   height: 40,
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.1),
+                                    color: context.surfaceOverlay,
                                     shape: BoxShape.circle,
                                   ),
                                   child: IconButton(
@@ -131,7 +145,7 @@ class HomeScreen extends StatelessWidget {
                                     },
                                     icon: Icon(
                                       auth.isLoggedIn ? LucideIcons.user : LucideIcons.logIn,
-                                      color: Colors.white,
+                                      color: context.onSurface,
                                       size: 20,
                                     ),
                                     padding: EdgeInsets.zero,
@@ -157,17 +171,17 @@ class HomeScreen extends StatelessWidget {
                                   padding: const EdgeInsets.only(left: 16),
                                   child: Icon(
                                     LucideIcons.search,
-                                    color: Colors.white.withOpacity(0.6),
+                                    color: context.onSurfaceSecondary,
                                     size: 20,
                                   ),
                                 ),
                                 Expanded(
                                   child: TextField(
-                                    style: const TextStyle(color: Colors.white),
+                                    style: TextStyle(color: context.onSurface),
                                     decoration: InputDecoration(
                                       hintText: l10n.searchPlaceholder,
                                       hintStyle: TextStyle(
-                                        color: Colors.white.withOpacity(0.4),
+                                        color: context.onSurface.withOpacity(0.4),
                                       ),
                                       border: InputBorder.none,
                                       contentPadding: const EdgeInsets.symmetric(
@@ -228,10 +242,10 @@ class HomeScreen extends StatelessWidget {
                     children: [
                       Text(
                         l10n.aiPresetsForYou,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: context.onSurface,
                         ),
                       ),
                       TextButton(
@@ -385,8 +399,8 @@ class _CategoryChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       decoration: BoxDecoration(
-        color: isActive ? ChefliTheme.primary : Colors.white.withOpacity(0.1),
-        border: isActive ? null : Border.all(color: Colors.white.withOpacity(0.05)),
+        color: isActive ? ChefliTheme.primary : context.surfaceOverlay,
+        border: isActive ? null : Border.all(color: context.onSurface.withOpacity(0.05)),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
@@ -394,7 +408,7 @@ class _CategoryChip extends StatelessWidget {
         style: TextStyle(
           fontSize: 14,
           fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-          color: isActive ? Colors.white : Colors.white.withOpacity(0.8),
+          color: isActive ? Colors.white : context.onSurface.withOpacity(0.8),
         ),
       ),
     );
@@ -419,7 +433,7 @@ class _RecipeCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: ChefliTheme.bgSurface,
+        color: context.bgSurface,
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(
@@ -429,9 +443,9 @@ class _RecipeCard extends StatelessWidget {
           Image.network(
             imageUrl,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(color: ChefliTheme.bgSurface),
+            errorBuilder: (_, __, ___) => Container(color: context.bgSurface),
           ),
-          // Gradient overlay
+          // Gradient overlay - keep black for image overlay
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -442,7 +456,7 @@ class _RecipeCard extends StatelessWidget {
               ),
             ),
           ),
-          // Content
+          // Content - text over image should stay white
           Positioned(
             left: 12,
             right: 12,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../theme/app_theme.dart';
+import '../theme/theme_extensions.dart';
 import '../localization/app_localizations.dart';
 import 'glass_panel.dart';
 
@@ -72,6 +73,8 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final inactiveColor = context.onSurfaceSecondary;
+    
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -83,7 +86,7 @@ class _NavItem extends StatelessWidget {
             Icon(
               icon,
               size: 20,
-              color: isActive ? ChefliTheme.primary : Colors.white.withOpacity(0.4),
+              color: isActive ? ChefliTheme.primary : inactiveColor,
             ),
             const SizedBox(height: 2),
             Text(
@@ -91,7 +94,7 @@ class _NavItem extends StatelessWidget {
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w500,
-                color: isActive ? ChefliTheme.primary : Colors.white.withOpacity(0.4),
+                color: isActive ? ChefliTheme.primary : inactiveColor,
               ),
             ),
           ],

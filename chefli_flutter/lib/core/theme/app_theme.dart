@@ -11,11 +11,14 @@ class ChefliTheme {
   static const Color textPrimary = Color(0xFFFFFFFF);
   static const Color textSecondary = Color(0xFFA3A3A3);
 
-  // Light theme colors
-  static const Color bgMainLight = Color(0xFFF8F7F5);
-  static const Color bgSurfaceLight = Color(0xFFFFFFFF);
-  static const Color textPrimaryLight = Color(0xFF1A1A1A);
-  static const Color textSecondaryLight = Color(0xFF6B6B6B);
+  // Light theme colors - Warm cream/beige palette
+  static const Color bgMainLight = Color(0xFFF5F3F0); // Warm cream background
+  static const Color bgSurfaceLight = Color(0xFFFAF9F7); // Off-white cream surface
+  static const Color bgCardLight = Color(0xFFFFFEFB); // Warm white for cards
+  static const Color textPrimaryLight = Color(0xFF1F1F1F); // Soft dark charcoal
+  static const Color textSecondaryLight = Color(0xFF6B6B6B); // Warm gray
+  static const Color borderLight = Color(0xFFE8E6E3); // Light warm gray for borders
+  static const Color surfaceOverlayLight = Color(0xFFF9F8F6); // Warm overlay
 
   static final ThemeData darkTheme = ThemeData.dark().copyWith(
     brightness: Brightness.dark,

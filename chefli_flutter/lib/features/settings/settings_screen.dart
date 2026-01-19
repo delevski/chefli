@@ -21,39 +21,50 @@ class SettingsScreen extends StatelessWidget {
       body: Stack(
         children: [
           // Background Glows
-          Positioned(
-            top: -100,
-            right: -100,
-            child: Container(
-              width: 400,
-              height: 400,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    ChefliTheme.primary.withOpacity(0.15),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -50,
-            left: -100,
-            child: Container(
-              width: 500,
-              height: 500,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    ChefliTheme.accent.withOpacity(0.1),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
+          Builder(
+            builder: (context) {
+              final isDark = Theme.of(context).brightness == Brightness.dark;
+              final primaryGlowOpacity = isDark ? 0.15 : 0.08;
+              final accentGlowOpacity = isDark ? 0.1 : 0.05;
+              return Stack(
+                children: [
+                  Positioned(
+                    top: -100,
+                    right: -100,
+                    child: Container(
+                      width: 400,
+                      height: 400,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            ChefliTheme.primary.withOpacity(primaryGlowOpacity),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: -50,
+                    left: -100,
+                    child: Container(
+                      width: 500,
+                      height: 500,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            ChefliTheme.accent.withOpacity(accentGlowOpacity),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
 
           Consumer<SettingsProvider>(
@@ -79,7 +90,9 @@ class SettingsScreen extends StatelessWidget {
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
-                                  LucideIcons.chevronLeft,
+                                  settings.textDirection == TextDirection.rtl 
+                                      ? LucideIcons.chevronRight 
+                                      : LucideIcons.chevronLeft,
                                   color: context.onSurface,
                                   size: 20,
                                 ),
@@ -244,7 +257,9 @@ class SettingsScreen extends StatelessWidget {
                                 title: l10n.languageLabel,
                                 subtitle: settings.languageName,
                                 trailing: Icon(
-                                  LucideIcons.chevronRight,
+                                  settings.textDirection == TextDirection.rtl 
+                                      ? LucideIcons.chevronLeft 
+                                      : LucideIcons.chevronRight,
                                   color: context.onSurfaceSecondary,
                                 ),
                                 onTap: () => _showLanguageDialog(context, settings, l10n),
@@ -279,7 +294,9 @@ class SettingsScreen extends StatelessWidget {
                                 title: l10n.privacy,
                                 subtitle: l10n.privacySettings,
                                 trailing: Icon(
-                                  LucideIcons.chevronRight,
+                                  settings.textDirection == TextDirection.rtl 
+                                      ? LucideIcons.chevronLeft 
+                                      : LucideIcons.chevronRight,
                                   color: context.onSurfaceSecondary,
                                 ),
                                 onTap: () {
@@ -294,7 +311,9 @@ class SettingsScreen extends StatelessWidget {
                                 title: l10n.helpSupport,
                                 subtitle: l10n.getHelp,
                                 trailing: Icon(
-                                  LucideIcons.chevronRight,
+                                  settings.textDirection == TextDirection.rtl 
+                                      ? LucideIcons.chevronLeft 
+                                      : LucideIcons.chevronRight,
                                   color: context.onSurfaceSecondary,
                                 ),
                                 onTap: () {
@@ -328,7 +347,9 @@ class SettingsScreen extends StatelessWidget {
                                 icon: LucideIcons.fileText,
                                 title: l10n.termsOfService,
                                 trailing: Icon(
-                                  LucideIcons.chevronRight,
+                                  settings.textDirection == TextDirection.rtl 
+                                      ? LucideIcons.chevronLeft 
+                                      : LucideIcons.chevronRight,
                                   color: context.onSurfaceSecondary,
                                 ),
                                 onTap: () {
@@ -558,6 +579,7 @@ class _SettingTile extends StatelessWidget {
   final String? subtitle;
   final Widget trailing;
   final VoidCallback? onTap;
+  final bool showArrow;
 
   const _SettingTile({
     required this.icon,
@@ -565,16 +587,21 @@ class _SettingTile extends StatelessWidget {
     this.subtitle,
     required this.trailing,
     this.onTap,
+    this.showArrow = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final settings = Provider.of<SettingsProvider>(context, listen: false);
+    final isRtl = settings.textDirection == TextDirection.rtl;
+    
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
+          textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
           children: [
             Container(
               width: 36,
@@ -588,7 +615,7 @@ class _SettingTile extends StatelessWidget {
             const SizedBox(width: 14),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
@@ -597,6 +624,7 @@ class _SettingTile extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                       color: context.onSurface,
                     ),
+                    textAlign: isRtl ? TextAlign.right : TextAlign.left,
                   ),
                   if (subtitle != null) ...[
                     const SizedBox(height: 2),
@@ -606,6 +634,7 @@ class _SettingTile extends StatelessWidget {
                         fontSize: 12,
                         color: context.onSurfaceSecondary,
                       ),
+                      textAlign: isRtl ? TextAlign.right : TextAlign.left,
                     ),
                   ],
                 ],

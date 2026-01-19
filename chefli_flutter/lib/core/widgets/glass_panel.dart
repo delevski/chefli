@@ -19,7 +19,7 @@ class GlassPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final overlayColor = isDark ? Colors.white : Colors.black;
+    final borderColor = context.borderColor;
     
     Widget content = ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
@@ -28,17 +28,29 @@ class GlassPanel extends StatelessWidget {
         child: Container(
           padding: padding ?? const EdgeInsets.all(24.0),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                overlayColor.withOpacity(isDark ? 0.03 : 0.05),
-                overlayColor.withOpacity(isDark ? 0.01 : 0.02),
-              ],
-            ),
+            color: isDark 
+                ? Colors.white.withOpacity(0.03)
+                : context.bgCard.withOpacity(0.8),
+            gradient: isDark
+                ? LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.white.withOpacity(0.03),
+                      Colors.white.withOpacity(0.01),
+                    ],
+                  )
+                : LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      context.bgCard.withOpacity(0.9),
+                      context.bgCard.withOpacity(0.7),
+                    ],
+                  ),
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
-              color: overlayColor.withOpacity(isDark ? 0.1 : 0.15),
+              color: borderColor,
               width: 1.0,
             ),
           ),

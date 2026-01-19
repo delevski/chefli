@@ -4,6 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../../core/widgets/glass_panel.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/theme_extensions.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../providers/recipe_provider.dart';
 import '../../providers/auth_provider.dart';
@@ -20,46 +21,66 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _isProEnabled = true;
 
   @override
+  void initState() {
+    super.initState();
+    // Refresh recipes when screen is opened
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<RecipeProvider>().refreshRecipes();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      backgroundColor: ChefliTheme.bgMain,
+      backgroundColor: context.bgMain,
       body: Stack(
         children: [
           // Background Glows
-          Positioned(
-            top: -100,
-            right: -100,
-            child: Container(
-              width: 400,
-              height: 400,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    ChefliTheme.primary.withOpacity(0.15),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -50,
-            left: -100,
-            child: Container(
-              width: 500,
-              height: 500,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    ChefliTheme.accent.withOpacity(0.1),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
+          Builder(
+            builder: (context) {
+              final isDark = Theme.of(context).brightness == Brightness.dark;
+              final primaryGlowOpacity = isDark ? 0.15 : 0.08;
+              final accentGlowOpacity = isDark ? 0.1 : 0.05;
+              return Stack(
+                children: [
+                  Positioned(
+                    top: -100,
+                    right: -100,
+                    child: Container(
+                      width: 400,
+                      height: 400,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            ChefliTheme.primary.withOpacity(primaryGlowOpacity),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: -50,
+                    left: -100,
+                    child: Container(
+                      width: 500,
+                      height: 500,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            ChefliTheme.accent.withOpacity(accentGlowOpacity),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
 
           // Main content - no bottom nav bar
@@ -81,22 +102,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
+                              color: context.surfaceOverlay,
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
+                            child: Icon(
                               LucideIcons.chevronLeft,
-                              color: Colors.white,
+                              color: context.onSurface,
                               size: 24,
                             ),
                           ),
                         ),
                         Text(
                           l10n.profile,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: context.onSurface,
                           ),
                         ),
                         Row(
@@ -107,12 +128,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 width: 40,
                                 height: 40,
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.1),
+                                  color: context.surfaceOverlay,
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   LucideIcons.bell,
-                                  color: Colors.white,
+                                  color: context.onSurface,
                                   size: 20,
                                 ),
                               ),
@@ -124,12 +145,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 width: 40,
                                 height: 40,
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.1),
+                                  color: context.surfaceOverlay,
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   LucideIcons.settings,
-                                  color: Colors.white,
+                                  color: context.onSurface,
                                   size: 20,
                                 ),
                               ),
@@ -232,10 +253,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             const SizedBox(height: 16),
                                 Text(
                                   user.name ?? user.email.split('@').first,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: context.onSurface,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -243,7 +264,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   '@$username',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.white.withOpacity(0.5),
+                                color: context.onSurfaceSecondary,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -255,7 +276,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.white.withOpacity(0.6),
+                                  color: context.onSurface.withOpacity(0.6),
                                 ),
                               ),
                             ),
@@ -304,10 +325,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     const SizedBox(height: 2),
                                     Text(
                                       l10n.masterSaucier,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                                        color: context.onSurface,
                                       ),
                                     ),
                                   ],
@@ -344,7 +365,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   l10n.nextRankMasterChef,
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: Colors.white.withOpacity(0.8),
+                                    color: context.onSurface.withOpacity(0.8),
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -363,7 +384,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               borderRadius: BorderRadius.circular(4),
                               child: LinearProgressIndicator(
                                 value: 0.75,
-                                backgroundColor: Colors.white.withOpacity(0.1),
+                                backgroundColor: context.onSurface.withOpacity(0.1),
                                 valueColor: AlwaysStoppedAnimation<Color>(ChefliTheme.primary),
                                 minHeight: 8,
                               ),
@@ -391,10 +412,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: [
                           Text(
                             l10n.recentGenerations,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: context.onSurface,
                             ),
                           ),
                           TextButton(
@@ -415,11 +436,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // Recipe History List
                       Consumer<RecipeProvider>(
                         builder: (context, provider, _) {
-                          final recipes = provider.allRecipes.take(3).toList();
+                          // Sort recipes by most recent (assuming they have a timestamp or are added in order)
+                          final recipes = provider.allRecipes.reversed.take(3).toList();
                           
                           if (recipes.isEmpty) {
-                            return Column(
-                              children: [mockRecipe].take(3).map((recipe) => _RecipeHistoryCard(recipe: recipe, l10n: l10n)).toList(),
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              child: Text(
+                                l10n.noSavedRecipesYet,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: context.onSurfaceSecondary,
+                                ),
+                              ),
                             );
                           }
                           
@@ -456,10 +485,10 @@ class _StatCard extends StatelessWidget {
         children: [
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: context.onSurface,
             ),
           ),
           const SizedBox(height: 4),
@@ -467,7 +496,7 @@ class _StatCard extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 10,
-              color: Colors.white.withOpacity(0.5),
+              color: context.onSurfaceSecondary,
               fontWeight: FontWeight.bold,
               letterSpacing: 0.5,
             ),
@@ -528,10 +557,10 @@ class _RecipeHistoryCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     recipe.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: context.onSurface,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -541,7 +570,7 @@ class _RecipeHistoryCard extends StatelessWidget {
                     '${l10n.generated} ${DateTime.now().toString().split(' ')[0]}',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.white.withOpacity(0.5),
+                      color: context.onSurfaceSecondary,
                     ),
                   ),
                 ],

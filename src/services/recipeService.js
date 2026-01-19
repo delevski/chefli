@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { instantDBService } from './instantDBService';
 
-const WEBHOOK_URL = 'https://hook.eu1.make.com/qvf4cgumvfdrsgo7yq61ddhtbzu5mxon';
+// Use backend proxy to avoid CORS issues
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+const LANGCHAIN_URL = `${BACKEND_URL}/api/recipes/generate`;
 
 /**
  * Parse time string like "15–25 minutes" or "15-25 minutes" to number
@@ -31,6 +33,23 @@ const parseCalories = (caloriesValue) => {
 const transformRecipe = (apiResponse, id = null) => {
   const recipeId = id || Date.now().toString();
 
+  // Build nutrition object with all available fields
+  const nutrition = {};
+  if (apiResponse.estimatedCaloricValue !== null && apiResponse.estimatedCaloricValue !== undefined) {
+    nutrition.calories = parseCalories(apiResponse.estimatedCaloricValue);
+  } else if (apiResponse.calories !== null && apiResponse.calories !== undefined) {
+    nutrition.calories = parseCalories(apiResponse.calories);
+  }
+  if (apiResponse.protein !== null && apiResponse.protein !== undefined) {
+    nutrition.protein = typeof apiResponse.protein === 'number' ? apiResponse.protein : parseFloat(apiResponse.protein);
+  }
+  if (apiResponse.carbohydrates !== null && apiResponse.carbohydrates !== undefined) {
+    nutrition.carbohydrates = typeof apiResponse.carbohydrates === 'number' ? apiResponse.carbohydrates : parseFloat(apiResponse.carbohydrates);
+  }
+  if (apiResponse.fats !== null && apiResponse.fats !== undefined) {
+    nutrition.fats = typeof apiResponse.fats === 'number' ? apiResponse.fats : parseFloat(apiResponse.fats);
+  }
+
   return {
     recipeId,
     userId: 'user-1', // You can get this from auth context
@@ -38,124 +57,79 @@ const transformRecipe = (apiResponse, id = null) => {
     shortDescription: apiResponse.shortDescription || apiResponse.description || '',
     image: {
       type: 'url',
+      // Use imageUrl if available, otherwise fallback to default
       value: apiResponse.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'
     },
+    imageUrl: apiResponse.imageUrl, // Also include imageUrl directly for compatibility
     prepTimeMinutes: parseTime(apiResponse.estimatedPreparationTime || apiResponse.time),
     difficulty: (apiResponse.difficultyLevel || apiResponse.difficulty || 'medium').toLowerCase(),
     ingredients: (apiResponse.ingredientsUsed || apiResponse.ingredients || []).map(ing => ({
-      name: typeof ing === 'string' ? ing : ing.name || '',
-      quantity: typeof ing === 'string' ? 'unknown' : ing.quantity || 'unknown'
+      name: typeof ing === 'string' ? ing : (ing.name || ''),
+      quantity: typeof ing === 'string' ? 'unknown' : (ing.quantity || 'unknown')
     })),
     steps: apiResponse.preparationSteps || apiResponse.steps || [],
     cookingMethods: apiResponse.cookingMethods || [],
-    nutrition: apiResponse.estimatedCaloricValue !== null && apiResponse.estimatedCaloricValue !== undefined
-      ? { calories: parseCalories(apiResponse.estimatedCaloricValue) }
-      : null,
+    nutrition: Object.keys(nutrition).length > 0 ? nutrition : null,
     calorieAccuracyNote: apiResponse.calorieAccuracyNote,
     sourceConfidence: 'high'
   };
 };
 
 /**
- * Parse plain text response from Make.com webhook
+ * Transform LangChain agent response to app recipe format
  */
-const parsePlainTextResponse = (text) => {
-  const lines = text.split('\n').map(line => line.trim());
-
-  const result = {
-    dishName: '',
-    shortDescription: '',
-    ingredientsUsed: [],
-    preparationSteps: [],
-    cookingMethods: [],
-    estimatedPreparationTime: '',
-    difficultyLevel: '',
-    estimatedCaloricValue: null,
-    calorieAccuracyNote: ''
-  };
-
-  let currentSection = '';
-  let i = 0;
-
-  while (i < lines.length) {
-    const line = lines[i];
-
-    // Skip empty lines
-    if (!line) {
-      i++;
-      continue;
+const transformLangChainResponse = (langChainData) => {
+  const recipeData = langChainData.recipe || {};
+  const imageUrl = langChainData.image_url;
+  const nutrition = langChainData.nutrition || {};
+  
+  // Extract time from instructions or use default
+  const instructions = recipeData.instructions || [];
+  let estimatedTime = 30; // Default 30 minutes
+  for (const instruction of instructions) {
+    const instructionText = String(instruction).toLowerCase();
+    // Try to extract time mentions like "15 minutes", "cook for 20 min"
+    const timeMatch = instructionText.match(/(\d+)\s*(?:min|minute|minutes|דקות|דקה)/);
+    if (timeMatch) {
+      const extractedTime = parseInt(timeMatch[1], 10);
+      if (extractedTime && extractedTime > estimatedTime) {
+        estimatedTime = extractedTime;
+      }
     }
-
-    if (line.includes('Dish Name')) {
-      // Get next non-empty line
-      i++;
-      while (i < lines.length && !lines[i]) i++;
-      if (i < lines.length) {
-        result.dishName = lines[i];
-      }
-    } else if (line.includes('Short Description')) {
-      // Get description (may span multiple lines)
-      i++;
-      const descLines = [];
-      while (i < lines.length && lines[i] && !lines[i].includes('Ingredients Used') && !lines[i].includes('Preparation Steps') && !lines[i].includes('Cooking Method')) {
-        descLines.push(lines[i]);
-        i++;
-      }
-      result.shortDescription = descLines.join(' ').trim();
-      continue; // Don't increment i again
-    } else if (line.includes('Ingredients Used')) {
-      currentSection = 'ingredients';
-    } else if (line.includes('Preparation Steps')) {
-      currentSection = 'steps';
-    } else if (line.includes('Cooking Method')) {
-      currentSection = 'cookingMethods';
-    } else if (line.includes('Estimated Preparation Time')) {
-      i++;
-      while (i < lines.length && !lines[i]) i++;
-      if (i < lines.length) {
-        result.estimatedPreparationTime = lines[i];
-      }
-    } else if (line.includes('Difficulty Level')) {
-      i++;
-      while (i < lines.length && !lines[i]) i++;
-      if (i < lines.length) {
-        result.difficultyLevel = lines[i];
-      }
-    } else if (line.includes('Estimated Caloric Value')) {
-      i++;
-      while (i < lines.length && !lines[i]) i++;
-      if (i < lines.length) {
-        const calLine = lines[i];
-        if (calLine.toLowerCase().includes('cannot') || calLine.toLowerCase().includes('unknown')) {
-          result.estimatedCaloricValue = null;
-        } else {
-          const match = calLine.match(/(\d+)/);
-          result.estimatedCaloricValue = match ? parseInt(match[1], 10) : null;
-        }
-      }
-    } else if (line.includes('Calorie Accuracy Note')) {
-      i++;
-      while (i < lines.length && !lines[i]) i++;
-      if (i < lines.length) {
-        result.calorieAccuracyNote = lines[i];
-      }
-    } else if (currentSection === 'ingredients' && line.startsWith('-')) {
-      const ingName = line.substring(1).trim();
-      result.ingredientsUsed.push({ name: ingName, quantity: 'unknown' });
-    } else if (currentSection === 'steps' && /^\d+\./.test(line)) {
-      result.preparationSteps.push(line.replace(/^\d+\.\s*/, ''));
-    } else if (currentSection === 'cookingMethods' && line.trim() && !line.includes('Preparation Steps')) {
-      result.cookingMethods.push(line.trim());
-    }
-
-    i++;
   }
-
-  return result;
+  
+  // Default difficulty to medium
+  const difficulty = 'medium';
+  
+  return {
+    dishName: recipeData.dish_name || 'Generated Recipe',
+    name: recipeData.dish_name || 'Generated Recipe',
+    shortDescription: '',
+    description: '',
+    // Use LangChain image_url if available, otherwise null (let UI handle fallback)
+    imageUrl: (imageUrl && imageUrl.trim() !== '') ? imageUrl : null,
+    estimatedPreparationTime: `${estimatedTime} minutes`,
+    time: estimatedTime,
+    prepTimeMinutes: estimatedTime,
+    difficultyLevel: difficulty,
+    difficulty: difficulty,
+    ingredientsUsed: recipeData.ingredients || [],
+    ingredients: recipeData.ingredients || [],
+    preparationSteps: instructions.map(e => String(e)),
+    steps: instructions.map(e => String(e)),
+    estimatedCaloricValue: nutrition.calories ? Math.round(nutrition.calories) : null,
+    calories: nutrition.calories ? Math.round(nutrition.calories) : null,
+    // Extract protein, carbohydrates, and fats from nutrition object
+    protein: nutrition.protein ? parseFloat(nutrition.protein) : null,
+    carbohydrates: nutrition.carbohydrates ? parseFloat(nutrition.carbohydrates) : null,
+    fats: nutrition.fats ? parseFloat(nutrition.fats) : null,
+    cookingMethods: [],
+    calorieAccuracyNote: null,
+  };
 };
 
 /**
- * Generate recipe from ingredients using Make.com webhook
+ * Generate recipe from ingredients using LangChain agent
  */
 export const generateRecipe = async (ingredients) => {
   try {
@@ -168,65 +142,55 @@ export const generateRecipe = async (ingredients) => {
       throw new Error('Please provide at least one ingredient');
     }
 
-    // Call Make.com webhook - handle both JSON and plain text responses
+    // Support both request formats: convert array to comma-separated string for LangChain
+    const menuString = ingredientsList.join(',');
+
+    // Call backend proxy endpoint (which forwards to LangChain agent to avoid CORS)
     const response = await axios.post(
-      WEBHOOK_URL,
-      { ingredients: ingredientsList },
+      LANGCHAIN_URL,
+      { menu: menuString },
       {
         headers: {
           'Content-Type': 'application/json',
         },
-        responseType: 'text', // Force text response to handle plain text
       }
     );
 
     if (response.status === 200 && response.data) {
-      let responseData;
-
-      // Try to parse as JSON first
-      try {
-        responseData = JSON.parse(response.data);
-      } catch (e) {
-        // If not JSON, parse as plain text
-        responseData = parsePlainTextResponse(response.data);
-      }
-
-      // Handle array response (if API returns multiple options)
-      if (Array.isArray(responseData) && responseData.length > 0) {
-        responseData = responseData[0];
-      }
-
-      const recipe = transformRecipe(responseData);
+      // Transform LangChain response to Recipe model format
+      const transformedData = transformLangChainResponse(response.data);
+      const recipe = transformRecipe(transformedData);
 
       // Save to InstantDB (non-blocking)
       try {
         await instantDBService.saveRecipe(recipe);
       } catch (error) {
-        console.warn('Failed to save to InstantDB:', error);
+        console.warn('Warning: Failed to save to InstantDB:', error);
         // Don't fail the request if InstantDB save fails
       }
 
       return recipe;
     } else {
-      throw new Error('Invalid response from recipe service');
+      const errorBody = response.data ? JSON.stringify(response.data) : 'Unknown error';
+      throw new Error(`Failed to generate recipe: ${response.status} - ${errorBody}`);
     }
   } catch (error) {
     console.error('Recipe generation error:', error);
     if (error.response) {
-      // Try to parse error response
-      let errorMessage = `API Error: ${error.response.status}`;
+      // Try to parse error response - axios handles UTF-8 automatically
+      let errorMessage = `Failed to generate recipe: ${error.response.status}`;
       if (error.response.data) {
         if (typeof error.response.data === 'string') {
-          errorMessage += ` - ${error.response.data.substring(0, 100)}`;
+          errorMessage += ` - ${error.response.data.substring(0, 200)}`;
         } else {
-          errorMessage += ` - ${JSON.stringify(error.response.data).substring(0, 100)}`;
+          errorMessage += ` - ${JSON.stringify(error.response.data).substring(0, 200)}`;
         }
       }
       throw new Error(errorMessage);
     } else if (error.request) {
       throw new Error('Network error: Could not reach recipe service');
     } else {
-      throw new Error(`Error: ${error.message}`);
+      throw new Error(`Error generating recipe: ${error.message}`);
     }
   }
 };

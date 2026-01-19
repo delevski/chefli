@@ -4,11 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../core/widgets/glass_panel.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../models/mock_recipe.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/theme_extensions.dart';
 import '../../providers/recipe_provider.dart';
+import '../../providers/settings_provider.dart';
 
 class RecipeScreen extends StatefulWidget {
   final String id;
@@ -22,6 +25,62 @@ class RecipeScreen extends StatefulWidget {
 class _RecipeScreenState extends State<RecipeScreen> {
   final Set<int> _checkedIngredients = {0};
 
+  Future<void> _shareRecipe(Recipe recipe, AppLocalizations l10n) async {
+    try {
+      final ingredientsList = recipe.ingredients
+          .map((ing) => '• ${ing.name} ${ing.quantity != 'unknown' ? '(${ing.quantity})' : ''}')
+          .join('\n');
+      
+      final stepsList = recipe.steps
+          .asMap()
+          .entries
+          .map((e) => '${e.key + 1}. ${e.value}')
+          .join('\n');
+
+      final shareText = '''
+${recipe.name}
+
+${l10n.ingredients}:
+$ingredientsList
+
+${l10n.instructions}:
+$stepsList
+
+${recipe.calories != null ? '${recipe.calories} ${l10n.kcal}' : ''}
+${'${recipe.time} ${l10n.minutes}'}
+''';
+
+      await Share.share(shareText, subject: recipe.name);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to share recipe: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _toggleFavorite(Recipe recipe) async {
+    final recipeProvider = context.read<RecipeProvider>();
+    await recipeProvider.toggleFavorite(recipe.id);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            recipeProvider.isFavorite(recipe.id)
+                ? 'Recipe added to favorites'
+                : 'Recipe removed from favorites',
+          ),
+          duration: const Duration(seconds: 2),
+          backgroundColor: ChefliTheme.primary,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Get recipe from provider or fallback to mock
@@ -32,7 +91,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: ChefliTheme.bgSurface,
+      backgroundColor: context.bgSurface,
       body: Stack(
         children: [
           CustomScrollView(
@@ -42,30 +101,27 @@ class _RecipeScreenState extends State<RecipeScreen> {
                 expandedHeight: 460,
                 pinned: false,
                 backgroundColor: Colors.transparent,
-                leading: Positioned(
-                  top: 0,
-                  left: 0,
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: ChefliTheme.bgSurface.withOpacity(0.6),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.1),
-                          ),
-                  shape: BoxShape.circle,
-                ),
-                        child: IconButton(
-                          icon: const Icon(
-                            LucideIcons.chevronLeft,
-                            color: Colors.white,
-                            size: 20,
-              ),
-              onPressed: () => context.pop(),
-            ),
+                leading: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: context.bgSurface.withOpacity(0.6),
+                        border: Border.all(
+                          color: context.onSurface.withOpacity(0.1),
+                        ),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: Icon(
+                          LucideIcons.chevronLeft,
+                          color: context.onSurface,
+                          size: 20,
+                        ),
+                        onPressed: () => context.pop(),
+                        padding: EdgeInsets.zero,
                       ),
                     ),
                   ),
@@ -73,47 +129,56 @@ class _RecipeScreenState extends State<RecipeScreen> {
                 actions: [
                   SafeArea(
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.only(top: 8, right: 8, bottom: 8),
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: ChefliTheme.bgSurface.withOpacity(0.6),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.1),
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () => _shareRecipe(recipe, l10n),
+                              borderRadius: BorderRadius.circular(20),
+                              child: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: context.bgSurface.withOpacity(0.6),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  LucideIcons.share2,
+                                  color: context.onSurface,
+                                  size: 20,
+                                ),
                               ),
-                              shape: BoxShape.circle,
-                            ),
-                            child: IconButton(
-                              icon: const Icon(
-                                LucideIcons.share2,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                              onPressed: () {},
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: ChefliTheme.bgSurface.withOpacity(0.6),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.1),
-                              ),
-                              shape: BoxShape.circle,
-                            ),
-                            child: IconButton(
-                              icon: const Icon(
-                                LucideIcons.heart,
-                                color: ChefliTheme.primary,
-                                size: 20,
-                              ),
-                              onPressed: () {},
-                            ),
+                          Consumer<RecipeProvider>(
+                            builder: (context, recipeProvider, _) {
+                              final isFavorite = recipeProvider.isFavorite(recipe.id);
+                              return Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () => _toggleFavorite(recipe),
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: context.bgSurface.withOpacity(0.6),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      LucideIcons.heart,
+                                      color: isFavorite ? Colors.red : context.onSurface,
+                                      size: 20,
+                                      fill: isFavorite ? 1.0 : 0.0,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -139,7 +204,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                         end: Alignment.bottomCenter,
                             colors: [
                               Colors.transparent,
-                              ChefliTheme.bgSurface.withOpacity(0.8),
+                              context.bgSurface.withOpacity(0.8),
                             ],
                       ),
                     ),
@@ -156,9 +221,9 @@ class _RecipeScreenState extends State<RecipeScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
-                                color: ChefliTheme.bgSurface.withOpacity(0.6),
+                                color: context.bgSurface.withOpacity(0.6),
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.1),
+                                  color: context.onSurface.withOpacity(0.1),
                                 ),
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -167,10 +232,10 @@ class _RecipeScreenState extends State<RecipeScreen> {
                       children: [
                         Text(
                           recipe.name,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 28,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: context.onSurface,
                                       height: 1.2,
                                     ),
                                   ),
@@ -180,7 +245,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                       recipe.description,
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: Colors.white.withOpacity(0.8),
+                                        color: context.onSurface.withOpacity(0.8),
                                         height: 1.4,
                                       ),
                                     ),
@@ -229,10 +294,11 @@ class _RecipeScreenState extends State<RecipeScreen> {
                 children: [
                           Text(
                             l10n.ingredients,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               letterSpacing: -0.5,
+                              color: context.onSurface,
                             ),
                           ),
                           Text(
@@ -245,15 +311,16 @@ class _RecipeScreenState extends State<RecipeScreen> {
                           ),
                         ],
                       ),
-                   const SizedBox(height: 16),
+                   const SizedBox(height: 12),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
+                          color: context.surfaceOverlay,
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.05),
+                            color: context.onSurface.withOpacity(0.05),
                           ),
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        padding: const EdgeInsets.symmetric(vertical: 4),
                      child: Column(
                           children: recipe.ingredients.asMap().entries.map((entry) {
                             final index = entry.key;
@@ -280,10 +347,11 @@ class _RecipeScreenState extends State<RecipeScreen> {
                       // Instructions Section
                       Text(
                         l10n.instructions,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           letterSpacing: -0.5,
+                          color: context.onSurface,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -300,26 +368,47 @@ class _RecipeScreenState extends State<RecipeScreen> {
                       // Nutrition Section
                       Text(
                         l10n.nutritionFacts,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           letterSpacing: -0.5,
+                          color: context.onSurface,
                         ),
                       ),
                    const SizedBox(height: 16),
-                      GridView.count(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        crossAxisCount: 4,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: 1.2,
-                        children: [
-                          _NutritionCard(l10n.protein, '28g', isPrimary: true),
-                          _NutritionCard(l10n.carbs, '12g'),
-                          _NutritionCard(l10n.fats, '18g'),
-                          _NutritionCard(l10n.fiber, '1g'),
-                        ],
+                      // Wrap GridView in a container to prevent cutoff
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: GridView.count(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          crossAxisCount: 4,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 1.2,
+                          children: [
+                            _NutritionCard(
+                              l10n.protein, 
+                              recipe.protein != null ? '${recipe.protein!.toStringAsFixed(0)}g' : '-',
+                              isPrimary: true,
+                            ),
+                            _NutritionCard(
+                              l10n.carbs, 
+                              recipe.carbohydrates != null ? '${recipe.carbohydrates!.toStringAsFixed(0)}g' : '-',
+                            ),
+                            _NutritionCard(
+                              l10n.fats, 
+                              recipe.fats != null ? '${recipe.fats!.toStringAsFixed(0)}g' : '-',
+                            ),
+                            _NutritionCard(
+                              l10n.fiber, 
+                              // Estimate fiber based on carbs (rough estimate: ~10% of carbs)
+                              recipe.carbohydrates != null && recipe.carbohydrates! > 0
+                                  ? '${(recipe.carbohydrates! * 0.1).toStringAsFixed(0)}g'
+                                  : '-',
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 100),
                     ],
@@ -340,8 +429,8 @@ class _RecipeScreenState extends State<RecipeScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    ChefliTheme.bgSurface.withOpacity(0.95),
-                    ChefliTheme.bgSurface,
+                    context.bgSurface.withOpacity(0.95),
+                    context.bgSurface,
                   ],
                 ),
               ),
@@ -350,7 +439,9 @@ class _RecipeScreenState extends State<RecipeScreen> {
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      context.push('/cooking/${recipe.id}');
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ChefliTheme.primary,
                       foregroundColor: Colors.white,
@@ -396,7 +487,7 @@ class _MetaBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: context.cardOverlay,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -406,10 +497,10 @@ class _MetaBadge extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Colors.white,
+              color: context.onSurface,
             ),
           ),
         ],
@@ -438,7 +529,7 @@ class _IngredientCheckbox extends StatelessWidget {
           ? BoxDecoration(
               border: Border(
                 bottom: BorderSide(
-                  color: Colors.white.withOpacity(0.05),
+                  color: context.cardBorder,
                 ),
               ),
             )
@@ -449,23 +540,23 @@ class _IngredientCheckbox extends StatelessWidget {
         activeColor: ChefliTheme.primary,
         checkColor: Colors.white,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 8,
+          horizontal: 8,
+          vertical: 4,
         ),
         controlAffinity: ListTileControlAffinity.leading,
         title: Text(
           ingredient.name,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: Colors.white,
+            color: context.onSurface,
           ),
         ),
         checkboxShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
         ),
         side: BorderSide(
-          color: Colors.white.withOpacity(0.2),
+          color: context.inputBorder,
           width: 2,
         ),
       ),
@@ -484,9 +575,9 @@ class _StepCard extends StatelessWidget {
     return Container(
         padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: context.cardOverlay,
         border: Border.all(
-          color: Colors.white.withOpacity(0.05),
+          color: context.cardBorder,
         ),
         borderRadius: BorderRadius.circular(12),
       ),
@@ -519,7 +610,7 @@ class _StepCard extends StatelessWidget {
                 '$number',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Colors.white, // Stays white - on orange gradient
                   fontSize: 14,
                 ),
               ),
@@ -531,7 +622,7 @@ class _StepCard extends StatelessWidget {
                                 step,
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.white.withOpacity(0.7),
+                                  color: context.textMuted,
                                   height: 1.5,
                                 ),
                               ),
@@ -558,29 +649,36 @@ class _NutritionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final settings = Provider.of<SettingsProvider>(context, listen: false);
+    final isHebrew = settings.language == AppLanguage.hebrew;
+    
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isPrimary
             ? ChefliTheme.primary.withOpacity(0.1)
-            : Colors.white.withOpacity(0.05),
+            : context.cardOverlay,
         border: Border.all(
           color: isPrimary
               ? ChefliTheme.primary.withOpacity(0.2)
-              : Colors.white.withOpacity(0.05),
+              : context.cardBorder,
         ),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             label,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: isHebrew ? 10 : 12,
               fontWeight: FontWeight.w500,
-              color: Colors.white.withOpacity(0.6),
+              color: context.textMuted,
             ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 4),
           Text(
@@ -588,7 +686,7 @@ class _NutritionCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: isPrimary ? ChefliTheme.primary : Colors.white,
+              color: isPrimary ? ChefliTheme.primary : context.onSurface,
             ),
           ),
         ],

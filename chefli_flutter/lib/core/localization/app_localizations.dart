@@ -154,6 +154,17 @@ class AppLocalizations {
   String get quickSalad => language == AppLanguage.hebrew ? '🥗 סלט מהיר' : '🥗 Quick Salad';
   String get pastaNight => language == AppLanguage.hebrew ? '🍝 ליל פסטה' : '🍝 Pasta Night';
   String get highProtein => language == AppLanguage.hebrew ? '🥩 חלבון גבוה' : '🥩 High Protein';
+  
+  // Template dish ingredients
+  String get quickSaladIngredients => language == AppLanguage.hebrew 
+      ? 'חסה, עגבניות, מלפפון, שמן זית' 
+      : 'lettuce, tomatoes, cucumber, olive oil';
+  String get pastaNightIngredients => language == AppLanguage.hebrew 
+      ? 'פסטה, עגבניות, שום, בזיליקום, פרמזן' 
+      : 'pasta, tomatoes, garlic, basil, parmesan';
+  String get highProteinIngredients => language == AppLanguage.hebrew 
+      ? 'חזה עוף, ביצים, תרד, קינואה' 
+      : 'chicken breast, eggs, spinach, quinoa';
   String get image => language == AppLanguage.hebrew ? 'תמונה' : 'Image';
   String get voice => language == AppLanguage.hebrew ? 'קול' : 'Voice';
   String get takePhoto => language == AppLanguage.hebrew ? 'צלם תמונה' : 'Take Photo';
@@ -219,6 +230,46 @@ class AppLocalizations {
   List<String> get quotes => language == AppLanguage.hebrew
     ? [quote1, quote2, quote3, quote4, quote5]
     : [quote1, quote2, quote3, quote4, quote5];
+  
+  // Cooking Mode
+  String stepXOfY(int current, int total) => language == AppLanguage.hebrew 
+    ? 'שלב $current מתוך $total' 
+    : 'Step $current of $total';
+  String get previousStep => language == AppLanguage.hebrew ? 'שלב קודם' : 'Previous Step';
+  String get nextStep => language == AppLanguage.hebrew ? 'שלב הבא' : 'Next Step';
+  String get completeStep => language == AppLanguage.hebrew ? 'סיים שלב' : 'Complete Step';
+  String get timerStarted => language == AppLanguage.hebrew ? 'טיימר התחיל' : 'Timer Started';
+  String get timerFinished => language == AppLanguage.hebrew ? 'טיימר הסתיים' : 'Timer Finished';
+  String timeRemaining(Duration duration) {
+    final minutes = duration.inMinutes;
+    final seconds = duration.inSeconds % 60;
+    if (language == AppLanguage.hebrew) {
+      if (minutes > 0) {
+        return '$minutes:${seconds.toString().padLeft(2, '0')} דקות';
+      }
+      return '$seconds שניות';
+    } else {
+      if (minutes > 0) {
+        return '$minutes:${seconds.toString().padLeft(2, '0')} remaining';
+      }
+      return '$seconds seconds';
+    }
+  }
+  String get ingredientUsed => language == AppLanguage.hebrew ? 'מרכיב בשימוש' : 'Ingredient Used';
+  String get allIngredientsReady => language == AppLanguage.hebrew ? 'כל המרכיבים מוכנים' : 'All Ingredients Ready';
+  String get cookingComplete => language == AppLanguage.hebrew ? 'בישול הושלם!' : 'Cooking Complete!';
+  String get restartCooking => language == AppLanguage.hebrew ? 'התחל מחדש' : 'Restart Cooking';
+  String get returnToRecipe => language == AppLanguage.hebrew ? 'חזור למתכון' : 'Return to Recipe';
+  String get voiceCommandListening => language == AppLanguage.hebrew ? 'מאזין לפקודות קוליות...' : 'Listening for voice commands...';
+  String get voiceCommandRecognized => language == AppLanguage.hebrew ? 'פקודה זוהתה' : 'Command Recognized';
+  String get noTimeInStep => language == AppLanguage.hebrew ? 'אין זמן מוגדר בשלב זה' : 'No time specified in this step';
+  String get pauseTimer => language == AppLanguage.hebrew ? 'השהה טיימר' : 'Pause Timer';
+  String get resumeTimer => language == AppLanguage.hebrew ? 'המשך טיימר' : 'Resume Timer';
+  String get startTimer => language == AppLanguage.hebrew ? 'התחל טיימר' : 'Start Timer';
+  String get stopTimer => language == AppLanguage.hebrew ? 'עצור טיימר' : 'Stop Timer';
+  String get ingredientsForStep => language == AppLanguage.hebrew ? 'מרכיבים לשלב זה' : 'Ingredients for this step';
+  String get allIngredients => language == AppLanguage.hebrew ? 'כל המרכיבים' : 'All Ingredients';
+  String get cookingProgress => language == AppLanguage.hebrew ? 'התקדמות בישול' : 'Cooking Progress';
 }
 
 extension SettingsProviderExtension on BuildContext {

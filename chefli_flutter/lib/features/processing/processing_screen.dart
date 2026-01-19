@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/theme/theme_extensions.dart';
 import '../../core/localization/app_localizations.dart';
 
 class ProcessingScreen extends StatefulWidget {
@@ -35,7 +36,7 @@ class _ProcessingScreenState extends State<ProcessingScreen>
     
     _progressController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 12),
+      duration: const Duration(seconds: 30),
     )..addListener(() {
       // Update phase based on progress
       if (_phases.isNotEmpty) {
@@ -87,95 +88,101 @@ class _ProcessingScreenState extends State<ProcessingScreen>
       _quotes = l10n.quotes;
     }
     return Scaffold(
-      backgroundColor: ChefliTheme.bgMain,
-      body: Container(
-        decoration: BoxDecoration(
-          color: ChefliTheme.bgMain,
-          gradient: RadialGradient(
-            center: Alignment.topCenter,
-            radius: 1.5,
-            colors: [
-              ChefliTheme.primary.withOpacity(0.08),
-              ChefliTheme.bgMain,
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Header
-              _buildHeader(),
-              
-              // Main Content
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Animated Rings Container
-                    _buildAnimatedRings(),
-                    
-                    const SizedBox(height: 40),
-                    
-                    // Title
-                    Text(
-                      l10n.chefliCraftingMasterpiece,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        height: 1.2,
-                        letterSpacing: -0.5,
-                      ),
-                    ).animate().fadeIn(delay: 200.ms).moveY(begin: 10, end: 0),
-                    
-                    const SizedBox(height: 16),
-                    
-                    // Current Phase
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 400),
-                      child: Text(
-                        _phases[_currentPhaseIndex],
-                        key: ValueKey(_currentPhaseIndex),
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: ChefliTheme.primary,
-                        ),
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 8),
-                    
-                    // AI Engine
-                    Text(
-                      l10n.aiEngineGpt4,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white.withOpacity(0.5),
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 48),
-                    
-                    // Efficiency Engine
-                    _buildEfficiencyBar(),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // Quote
-                    _buildQuote(),
-                  ],
-                ),
+      backgroundColor: context.bgMain,
+      body: Builder(
+        builder: (context) {
+          final isDark = Theme.of(context).brightness == Brightness.dark;
+          final glowOpacity = isDark ? 0.08 : 0.04;
+          return Container(
+            decoration: BoxDecoration(
+              color: context.bgMain,
+              gradient: RadialGradient(
+                center: Alignment.topCenter,
+                radius: 1.5,
+                colors: [
+                  ChefliTheme.primary.withOpacity(glowOpacity),
+                  context.bgMain,
+                ],
               ),
-              
-              // Bottom Icons
-              _buildBottomIcons(),
-              
-              const SizedBox(height: 24),
-            ],
-          ),
-        ),
+            ),
+            child: SafeArea(
+              child: Column(
+                children: [
+                  // Header
+                  _buildHeader(),
+                  
+                  // Main Content
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Animated Rings Container
+                        _buildAnimatedRings(),
+                        
+                        const SizedBox(height: 40),
+                        
+                        // Title
+                        Text(
+                          l10n.chefliCraftingMasterpiece,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                            height: 1.2,
+                            letterSpacing: -0.5,
+                          ),
+                        ).animate().fadeIn(delay: 200.ms).moveY(begin: 10, end: 0),
+                        
+                        const SizedBox(height: 16),
+                        
+                        // Current Phase
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 400),
+                          child: Text(
+                            _phases[_currentPhaseIndex],
+                            key: ValueKey(_currentPhaseIndex),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: ChefliTheme.primary,
+                            ),
+                          ),
+                        ),
+                        
+                        const SizedBox(height: 8),
+                        
+                        // AI Engine
+                        Text(
+                          l10n.aiEngineGpt4,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white.withOpacity(0.5),
+                          ),
+                        ),
+                        
+                        const SizedBox(height: 48),
+                        
+                        // Efficiency Engine
+                        _buildEfficiencyBar(),
+                        
+                        const SizedBox(height: 24),
+                        
+                        // Quote
+                        _buildQuote(),
+                      ],
+                    ),
+                  ),
+                  
+                  // Bottom Icons
+                  _buildBottomIcons(),
+                  
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

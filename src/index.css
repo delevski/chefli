@@ -103,3 +103,45 @@ button {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }
+
+/* RTL Support */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .container,
+[dir="rtl"] .glass-panel,
+[dir="rtl"] button,
+[dir="rtl"] input,
+[dir="rtl"] textarea {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Flexbox RTL support */
+[dir="rtl"] .flex-row {
+  flex-direction: row-reverse;
+}
+
+/* Logical properties for RTL spacing */
+[dir="rtl"] .margin-start {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+[dir="rtl"] .margin-end {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+/* Input and textarea RTL */
+[dir="rtl"] input,
+[dir="rtl"] textarea {
+  text-align: right;
+}
+
+[dir="rtl"] input::placeholder,
+[dir="rtl"] textarea::placeholder {
+  text-align: right;
+}
