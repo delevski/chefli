@@ -259,24 +259,29 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 InstantDB Backend Proxy running on http://localhost:${PORT}`);
-  console.log(`📡 Health check: http://localhost:${PORT}/health`);
-  if (process.env.NODE_ENV === 'production') {
-    console.log(`🌐 Serving webapp from: ${distPath}`);
-  }
-  console.log(`\nAvailable endpoints:`);
-  console.log(`  POST /api/users/create`);
-  console.log(`  POST /api/users/find`);
-  console.log(`  POST /api/users/find-google`);
-  console.log(`  POST /api/users/create-google`);
-  console.log(`  PUT  /api/users/update/:userId`);
-  console.log(`  POST /api/recipes/save`);
-  console.log(`  POST /api/recipes/get`);
-  console.log(`  POST /api/recipes/generate (LangChain Agent Proxy)`);
-  console.log(`  POST /api/ocr/extract-text (FREE - Tesseract.js)`);
-  console.log(`  POST /api/speech/transcribe (FREE tier - AssemblyAI)`);
-});
+// Export for Vercel serverless functions
+export default app;
+
+// Start server (only when running locally, not in Vercel)
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    console.log(`🚀 InstantDB Backend Proxy running on http://localhost:${PORT}`);
+    console.log(`📡 Health check: http://localhost:${PORT}/health`);
+    if (process.env.NODE_ENV === 'production') {
+      console.log(`🌐 Serving webapp from: ${distPath}`);
+    }
+    console.log(`\nAvailable endpoints:`);
+    console.log(`  POST /api/users/create`);
+    console.log(`  POST /api/users/find`);
+    console.log(`  POST /api/users/find-google`);
+    console.log(`  POST /api/users/create-google`);
+    console.log(`  PUT  /api/users/update/:userId`);
+    console.log(`  POST /api/recipes/save`);
+    console.log(`  POST /api/recipes/get`);
+    console.log(`  POST /api/recipes/generate (LangChain Agent Proxy)`);
+    console.log(`  POST /api/ocr/extract-text (FREE - Tesseract.js)`);
+    console.log(`  POST /api/speech/transcribe (FREE tier - AssemblyAI)`);
+  });
+}
 
 

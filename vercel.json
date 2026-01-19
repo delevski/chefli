@@ -27,6 +27,12 @@
       "dest": "/dist/$1"
     }
   ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/backend/server.js"
+    }
+  ],
   "env": {
     "INSTANTDB_ADMIN_TOKEN": "@instantdb_admin_token",
     "LANGCHAIN_URL": "@langchain_url",
