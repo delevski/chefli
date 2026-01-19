@@ -200,7 +200,6 @@ const LoginPage = ({ onLoginSuccess, onClose }) => {
               type="submit"
               className="submit-btn"
               disabled={isLoading}
-              onClick={(e) => e.stopPropagation()}
             >
               {isLoading ? t('loading') : (isCreateAccount ? t('createAccount') : t('signIn'))}
             </button>

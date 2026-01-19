@@ -6,7 +6,11 @@ class InstantDBConfig {
   static const String appId = '588227b6-6022-44a9-88f3-b1c2e2cce304';
   static const String baseUrl = 'https://api.instantdb.com';
   static const bool useBackendProxy = true;
-  static const String backendUrl = 'http://localhost:3000';
+  
+  // Backend URL - Change this to your production URL when deploying
+  // Development: 'http://localhost:3000'
+  // Production: 'https://chefli.vercel.app' (or your Vercel domain)
+  static const String backendUrl = 'https://chefli.vercel.app';
   
   // Auth Configuration
   static const bool emailPasswordEnabled = true;

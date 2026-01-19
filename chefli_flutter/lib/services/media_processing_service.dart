@@ -6,9 +6,10 @@ import 'package:path/path.dart' as p;
 /// Service for processing media files (OCR and transcription)
 /// Uses free services: Tesseract.js for OCR and AssemblyAI for transcription
 class MediaProcessingService {
-  // Update this URL to match your backend
-  // For production, use your deployed backend URL
-  static const String baseUrl = 'http://localhost:3000';
+  // Backend URL - Change this to your production URL when deploying
+  // Development: 'http://localhost:3000'
+  // Production: 'https://chefli.vercel.app' (or your Vercel domain)
+  static const String baseUrl = 'https://chefli.vercel.app';
   
   /// Extract text from an image using OCR
   /// 
