@@ -1,166 +1,88 @@
-# Chefli - AI-Powered Recipe Generator
+# Chefli
 
-Chefli is an AI-powered recipe generator that creates personalized recipes based on ingredients you have available.
+**Tell Chefli what's in your fridge (typed, photographed or spoken) and it turns it into a full recipe, on the web and in a Flutter mobile app.**
 
-## Features
+**Live:** https://chefli.vercel.app
 
-- Enter ingredients and get AI-generated recipes
-- Save and view your recipe history
-- Dark/Light theme support
-- Multi-language support (English/Hebrew)
-- Google Sign-In authentication
-- Settings page with privacy policy and terms
+<img src="chefli_flutter/designs/chefli_landing_input/screen.png" alt="Chefli ingredient input screen (design)" width="320">
 
-## Quick Start
+## What it does
 
-### Prerequisites
+- **Ingredients in, recipe out.** Enter the ingredients you have and get a generated recipe with steps and timing.
+- **Three ways to input:** type a list, **upload a photo** of a list or label (OCR), or **record your voice** (speech-to-text).
+- **Saved recipes and history** per user, plus a profile and settings.
+- **Google Sign-In.**
+- **English and Hebrew**, dark and light themes.
+- **Mobile app** (`chefli_flutter/`) with the same flow, plus a step-by-step cooking screen with text-to-speech.
 
-- Node.js 20+
-- npm 9+
+## Architecture
 
-### Installation
+```mermaid
+flowchart LR
+  W[React web app<br/>Vite] --> B[Express backend<br/>backend/server.js · api/index.js]
+  F[Flutter app<br/>chefli_flutter] --> B
+  B -- /api/recipes/generate --> L[LangChain recipe agent<br/>external Python service]
+  B -- /api/ocr/extract-text --> T[Tesseract.js OCR]
+  B -- /api/speech/transcribe --> S[Speech-to-text API]
+  W --> DB[(InstantDB<br/>users · recipes)]
+```
+
+Backend endpoints: `GET /health`, `POST /api/recipes/generate`, `POST /api/ocr/extract-text`, `POST /api/speech/transcribe`, plus user endpoints (`/api/users/create`, `/api/users/find`, `/api/users/create-google`).
+
+Key design decisions:
+
+- **Backend as a thin proxy.** Clients never call the AI service directly: the Express backend forwards recipe requests to a separate LangChain agent (URL from `LANGCHAIN_URL`), which avoids CORS and keeps service keys server-side. It accepts both a comma-separated `menu` and an `ingredients` array.
+- **One backend, three hosts.** The same Express app runs locally, in Docker (`Dockerfile`, `docker-compose.yml`), and as a serverless function on Vercel (`api/index.js` + `vercel.json` rewrites) or Netlify (`netlify.toml`).
+- **Media handled server-side.** Uploads go through `multer`; OCR runs with Tesseract.js, and audio goes to a hosted transcription API.
+- **InstantDB for data and permissions.** User and recipe data live in InstantDB, with access rules in `rules.js` (users read their own data).
+- **Two clients, one API.** The React web app and the Flutter app share the backend, so features land in both.
+
+## Tech stack
+
+- **Web:** React 19, Vite, React Router, Framer Motion, lucide-react, axios
+- **Mobile:** Flutter (Dart), Provider, go_router, Firebase Auth + Google Sign-In, speech_to_text, flutter_tts, image_picker, record
+- **Backend:** Node.js, Express, multer, cors
+- **Data:** InstantDB (`@instantdb/react`, `@instantdb/admin`)
+- **AI / media:** LangChain recipe agent (Python service), Tesseract.js OCR, hosted speech-to-text
+- **Testing:** Playwright end-to-end tests (`tests/`: API endpoints, auth, web app)
+- **Deploy:** Vercel, Netlify or Docker
+
+## Project structure
+
+```
+src/              React web app (pages, components, services, context)
+backend/          Express server (recipe proxy, OCR, transcription)
+api/              Serverless entry for Vercel
+chefli_flutter/   Flutter mobile app (+ designs/)
+tests/            Playwright e2e tests
+```
+
+## Run locally
+
+Prerequisites: Node.js 20+ (and Flutter for the mobile app).
 
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd chefli
-
-# Install dependencies
 npm install
+cp .env.example .env.development   # fill in your own values; see ENV_SETUP.md
+npm run dev:all                    # backend on :3000 + web app on :5173
 ```
 
-### Development
+Other scripts: `npm run dev` (web only), `npm run backend` (API only), `npm run build`, `npm run test:e2e`.
 
-Run both backend and webapp together:
+Environment variable names (values are never committed): `INSTANTDB_APP_ID`, `INSTANTDB_ADMIN_TOKEN`, `BACKEND_URL` / `VITE_BACKEND_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, and optionally `LANGCHAIN_URL`. See `ENV_SETUP.md` and `GOOGLE_OAUTH_SETUP.md`.
+
+Mobile app:
 
 ```bash
-npm run dev:all
+cd chefli_flutter
+flutter pub get
+flutter run
 ```
 
-This starts:
-- Backend: http://localhost:3000
-- Webapp: http://localhost:5173
+## Status
 
-Open http://localhost:5173 in your browser.
+Working product: the web app is live on Vercel and the Flutter app uses the production backend. Setup and deployment notes are in the `*.md` guides at the repo root.
 
-### Production Build
+## Author
 
-```bash
-# Build the webapp
-npm run build
-
-# Start production server
-NODE_ENV=production node backend/server.js
-```
-
-## Project Structure
-
-```
-chefli/
-├── backend/              # Express backend server
-│   ├── server.js         # Main server file
-│   └── instantdb-proxy.js # InstantDB API proxy
-├── src/                  # React webapp source
-│   ├── components/       # Reusable components
-│   ├── context/          # React context providers
-│   ├── pages/            # Page components
-│   ├── services/         # API services
-│   └── styles/           # CSS styles
-├── dist/                 # Production build output
-├── .env.development      # Dev environment variables
-├── .env.production       # Prod environment variables
-└── package.json          # Project configuration
-```
-
-## Available Scripts
-
-| Script | Description |
-|--------|-------------|
-| `npm run dev:all` | Run backend + webapp together |
-| `npm run dev` | Run webapp only |
-| `npm run dev:backend` | Run backend only |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm run verify:config` | Verify configuration |
-
-## Environment Variables
-
-### Development (`.env.development`)
-
-```bash
-VITE_BACKEND_URL=http://localhost:3000
-VITE_GOOGLE_CLIENT_ID=your-google-client-id
-VITE_INSTANTDB_APP_ID=your-instantdb-app-id
-```
-
-### Production (`.env.production`)
-
-```bash
-VITE_BACKEND_URL=https://your-production-url.com
-VITE_GOOGLE_CLIENT_ID=your-production-google-client-id
-VITE_INSTANTDB_APP_ID=your-instantdb-app-id
-```
-
-## Deployment
-
-Multiple deployment options are available:
-
-### Docker
-
-```bash
-# Build and run
-docker build -t chefli .
-docker run -p 3000:3000 chefli
-```
-
-### Docker Compose
-
-```bash
-docker-compose up -d
-```
-
-### Vercel
-
-```bash
-vercel --prod
-```
-
-### Netlify
-
-```bash
-netlify deploy --prod
-```
-
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
-
-## Documentation
-
-- [DEVELOPMENT.md](DEVELOPMENT.md) - Development setup guide
-- [DEPLOYMENT.md](DEPLOYMENT.md) - Deployment options
-- [ENV_SETUP.md](ENV_SETUP.md) - Environment configuration
-
-## API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/health` | GET | Health check |
-| `/api/users/create` | POST | Create user account |
-| `/api/users/find` | POST | Find user by email |
-| `/api/users/create-google` | POST | Google sign-in |
-| `/api/recipes/generate` | POST | Generate recipe |
-| `/api/ocr/extract-text` | POST | OCR text extraction |
-| `/api/speech/transcribe` | POST | Audio transcription |
-
-## Tech Stack
-
-- **Frontend**: React 19, Vite, Framer Motion, React Router
-- **Backend**: Express.js, Node.js
-- **Database**: InstantDB
-- **Auth**: Google OAuth 2.0
-- **AI**: LangChain (recipe generation)
-- **OCR**: Tesseract.js
-- **Styling**: CSS with CSS Variables
-
-## License
-
-Private - All rights reserved
+**Or Delevski** · https://ordelwebsite.vercel.app
