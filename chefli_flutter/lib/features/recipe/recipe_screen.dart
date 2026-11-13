@@ -10,6 +10,7 @@ import '../../core/localization/app_localizations.dart';
 import '../../models/mock_recipe.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_extensions.dart';
+import '../../core/utils/image_utils.dart';
 import '../../providers/recipe_provider.dart';
 import '../../providers/settings_provider.dart';
 
@@ -189,8 +190,8 @@ ${'${recipe.time} ${l10n.minutes}'}
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.network(
-                    recipe.imageUrl ?? 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400',
+                  Image(
+                    image: recipeImageProvider(recipe.imageUrl),
                     fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) => Container(
                           color: Colors.grey[900],

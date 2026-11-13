@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../core/widgets/glass_panel.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_extensions.dart';
+import '../../core/utils/image_utils.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../providers/recipe_provider.dart';
 import '../../providers/auth_provider.dart';
@@ -529,7 +530,7 @@ class _RecipeHistoryCard extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 image: DecorationImage(
-                  image: NetworkImage(recipe.imageUrl ?? 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'),
+                  image: recipeImageProvider(recipe.imageUrl),
                   fit: BoxFit.cover,
                 ),
               ),

@@ -6,6 +6,7 @@ import '../../core/widgets/glass_panel.dart';
 import '../../core/widgets/bottom_nav_bar.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_extensions.dart';
+import '../../core/utils/image_utils.dart';
 import '../../core/localization/app_localizations.dart';
 import '../../providers/recipe_provider.dart';
 import '../../providers/auth_provider.dart';
@@ -228,11 +229,7 @@ class _RecipeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final hasImage = recipe.imageUrl != null && recipe.imageUrl!.isNotEmpty;
-    final imageUrl = hasImage 
-        ? recipe.imageUrl! 
-        : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400';
-    
+
     return GestureDetector(
       onTap: () => context.push('/recipe/${recipe.id}'),
       child: Container(
@@ -246,8 +243,8 @@ class _RecipeCard extends StatelessWidget {
             children: [
               // Background Image
               Positioned.fill(
-                child: Image.network(
-                  imageUrl,
+                child: Image(
+                  image: recipeImageProvider(recipe.imageUrl),
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     // Fallback placeholder if image fails to load
